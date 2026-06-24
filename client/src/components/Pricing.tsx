@@ -9,7 +9,7 @@ const plans = [
     subtitle: "No account required",
     features: [
       "50,000 tokens to explore",
-      "GPT-5.4-mini responses",
+      "BizzyB responses",
       "Business intelligence focus",
       "Chats are not saved",
     ],

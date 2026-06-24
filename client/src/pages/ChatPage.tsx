@@ -241,7 +241,7 @@ export function ChatPage() {
                   </h1>
                 </div>
                 <p className="mt-1 text-xs text-slate-500">
-                  GPT-5.4-mini · Business intelligence assistant
+                  BizzyB · The Buselligence AI
                 </p>
               </div>
 
@@ -336,7 +336,7 @@ export function ChatPage() {
                       )}
                     >
                       <p className="mb-1 text-[10px] uppercase tracking-wide opacity-70">
-                        {message.role === "user" ? "You" : "Buselligence"}
+                        {message.role === "user" ? "You" : "BizzyB"}
                       </p>
                       <div className="markdown whitespace-pre-wrap">
                         {message.content ||
@@ -405,7 +405,7 @@ export function ChatPage() {
                 placeholder={
                   requiresSignIn && !isAuthenticated
                     ? "Sign in to continue chatting..."
-                    : "Ask Buselligence anything about your business data..."
+                    : "Ask BizzyB anything about your business data..."
                 }
                 disabled={loading || (requiresSignIn && !isAuthenticated)}
                 className="max-h-40 min-h-[52px] flex-1 resize-none rounded-2xl border border-white/10 bg-[#0b1020] px-4 py-3 text-sm text-white outline-none transition focus:border-brand-500 disabled:opacity-60"

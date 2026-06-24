@@ -3,9 +3,9 @@ import { BarChart3, Brain, Database, LineChart, Shield, Zap } from "lucide-react
 const features = [
   {
     icon: Brain,
-    title: "GPT-5.4-mini powered",
+    title: "Powered by BizzyB",
     description:
-      "Ask natural-language questions and get analyst-grade answers grounded in business intelligence best practices.",
+      "Ask natural-language questions and get analyst-grade answers from BizzyB, the Buselligence AI.",
   },
   {
     icon: Database,

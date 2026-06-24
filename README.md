@@ -1,6 +1,6 @@
 # Buselligence
 
-Business intelligence ChatGPT-style chatbot powered by **GPT-5.4-mini**.
+Business intelligence chatbot powered by **BizzyB**, the Buselligence AI.
 
 ## Features
 
@@ -28,7 +28,8 @@ npm run dev
 
 | Variable | Description |
 |----------|-------------|
-| `OPENAI_API_KEY` | OpenAI API key for GPT-5.4-mini |
+| `OPENAI_API_KEY` | OpenAI API key for BizzyB |
+| `OPENAI_MODEL` | OpenAI model ID used by BizzyB (optional) |
 | `BETTER_AUTH_SECRET` | Secret for BetterAuth sessions |
 | `BETTER_AUTH_URL` | Server URL (default `http://localhost:3001`) |
 | `CLIENT_URL` | Frontend URL for CORS (default `http://localhost:5173`) |

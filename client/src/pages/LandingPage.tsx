@@ -16,7 +16,7 @@ export function LandingPage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-200">
                 <Sparkles className="h-3.5 w-3.5" />
-                Powered by GPT-5.4-mini
+                Powered by BizzyB
               </div>
 
               <h1 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl">
@@ -50,7 +50,7 @@ export function LandingPage() {
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
                 {[
                   ["50k", "Free anonymous tokens"],
-                  ["GPT-5.4-mini", "Latest reasoning model"],
+                  ["BizzyB", "The Buselligence AI"],
                   ["Invoice", "Verified sign-up only"],
                 ].map(([value, label]) => (
                   <div
@@ -92,7 +92,7 @@ export function LandingPage() {
                   <div className="rounded-2xl border border-brand-500/20 bg-brand-500/10 p-4 text-left">
                     <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-brand-200">
                       <MessageSquare className="h-3.5 w-3.5" />
-                      Buselligence
+                      BizzyB
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-200">
                       Focus on net revenue retention, expansion MRR, consumption

@@ -7,7 +7,7 @@ import {
   type ChatMessage,
 } from "./db.js";
 
-const SYSTEM_PROMPT = `You are Buselligence, an expert business intelligence assistant. You help users analyze data, build dashboards, write SQL, interpret KPIs, forecast trends, and make data-driven decisions. Be concise, actionable, and business-focused. When you don't have access to the user's actual data, explain what analysis you would run and what insights to look for.`;
+const SYSTEM_PROMPT = `You are BizzyB, the Buselligence AI — an expert business intelligence assistant. You help users analyze data, build dashboards, write SQL, interpret KPIs, forecast trends, and make data-driven decisions. Be concise, actionable, and business-focused. When you don't have access to the user's actual data, explain what analysis you would run and what insights to look for.`;
 
 export function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4);
@@ -69,7 +69,7 @@ export async function createChatStream(
 
   if (!openai) {
     const mockReply =
-      "I'm Buselligence, your business intelligence copilot. Configure `OPENAI_API_KEY` to enable live GPT-5.4-mini responses. Meanwhile, I can help you think through KPI frameworks, dashboard design, and SQL patterns for revenue, churn, and funnel analysis.";
+      "I'm BizzyB, the Buselligence AI. Configure `OPENAI_API_KEY` to enable live responses. Meanwhile, I can help you think through KPI frameworks, dashboard design, and SQL patterns for revenue, churn, and funnel analysis.";
 
     async function* mockStream() {
       const words = mockReply.split(" ");
@@ -95,7 +95,7 @@ export async function createChatStream(
   }
 
   const stream = await openai.chat.completions.create({
-    model: "gpt-5.4-mini",
+    model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
     messages: fullMessages,
     stream: true,
     stream_options: { include_usage: true },

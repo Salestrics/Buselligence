@@ -41,7 +41,7 @@ async function getSession(req: express.Request) {
 }
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, model: "gpt-5.4-mini" });
+  res.json({ ok: true, model: "BizzyB" });
 });
 
 app.get("/api/usage", async (req, res) => {
