@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./load-env.js";
 import Database from "better-sqlite3";
 import { hashPassword } from "better-auth/crypto";
 import { randomUUID } from "node:crypto";
