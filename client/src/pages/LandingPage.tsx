@@ -113,7 +113,20 @@ export function LandingPage() {
 
       <footer className="border-t border-white/5 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-sm text-slate-500 md:flex-row">
-          <p>© {new Date().getFullYear()} Buselligence. All rights reserved.</p>
+          <div className="text-center md:text-left">
+            <p>© {new Date().getFullYear()} Salestrics Inc</p>
+            <p className="mt-1">
+              Powered by{" "}
+              <a
+                href="https://salestrics.com"
+                target="_blank"
+                rel="noreferrer"
+                className="text-slate-400 transition hover:text-white"
+              >
+                Salestrics
+              </a>
+            </p>
+          </div>
           <div className="flex gap-6">
             <Link to="/chat" className="hover:text-slate-300">
               Chat
