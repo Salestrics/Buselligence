@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { Logo } from "./Logo";
 import { useSession, signOut } from "../lib/auth-client";
 import { cn, SIGNUP_FORM_URL } from "../lib/utils";
 
@@ -17,11 +18,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0b1020]/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-center gap-3">
-          <img
-            src="/buselligence.png"
-            alt="Buselligence"
-            className="h-9 w-9 rounded-xl"
-          />
+          <Logo size="sm" />
           <span className="text-lg font-semibold tracking-tight">
             Buselligence
           </span>

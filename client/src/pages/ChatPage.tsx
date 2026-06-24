@@ -9,6 +9,7 @@ import {
   Send,
   Trash2,
 } from "lucide-react";
+import { Logo } from "../components/Logo";
 import { Navbar } from "../components/Navbar";
 import { useSession } from "../lib/auth-client";
 import {
@@ -289,11 +290,7 @@ export function ChatPage() {
           <div className="flex-1 overflow-y-auto px-5 py-6">
             {messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center text-center">
-                <img
-                  src="/buselligence.png"
-                  alt="Buselligence"
-                  className="h-16 w-16 rounded-2xl"
-                />
+                <Logo size="lg" showGlow />
                 <h2 className="mt-6 text-2xl font-semibold text-white">
                   What should we analyze?
                 </h2>
