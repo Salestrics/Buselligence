@@ -371,14 +371,16 @@ export function ChatPage() {
                     >
                       Sign in
                     </Link>
-                    <a
-                      href={SIGNUP_FORM_URL}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-full border border-white/10 px-4 py-2 text-xs text-white"
-                    >
-                      Request access
-                    </a>
+                    {SIGNUP_FORM_URL ? (
+                      <a
+                        href={SIGNUP_FORM_URL}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-white/10 px-4 py-2 text-xs text-white"
+                      >
+                        Request access
+                      </a>
+                    ) : null}
                   </div>
                 </div>
               </div>

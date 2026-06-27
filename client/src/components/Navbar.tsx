@@ -61,16 +61,18 @@ export function Navbar() {
               >
                 Sign in
               </Link>
-              <a
-                href={SIGNUP_FORM_URL}
-                target="_blank"
-                rel="noreferrer"
-                className={cn(
-                  "rounded-full bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-400"
-                )}
-              >
-                Request Access
-              </a>
+              {SIGNUP_FORM_URL ? (
+                <a
+                  href={SIGNUP_FORM_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={cn(
+                    "rounded-full bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-400"
+                  )}
+                >
+                  Request Access
+                </a>
+              ) : null}
             </>
           )}
         </div>

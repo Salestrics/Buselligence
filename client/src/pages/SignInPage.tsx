@@ -96,14 +96,21 @@ export function SignInPage() {
               invoice details through our secure request form and we&apos;ll
               provision credentials within 1–2 business days.
             </p>
-            <a
-              href={SIGNUP_FORM_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-4 inline-flex text-sm font-medium text-brand-200 hover:text-white"
-            >
-              Request access with invoice →
-            </a>
+            {SIGNUP_FORM_URL ? (
+              <a
+                href={SIGNUP_FORM_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex text-sm font-medium text-brand-200 hover:text-white"
+              >
+                Request access with invoice →
+              </a>
+            ) : (
+              <p className="mt-4 text-sm text-amber-100/70">
+                Configure <code className="text-amber-100">VITE_SIGNUP_FORM_URL</code>{" "}
+                to enable account requests.
+              </p>
+            )}
           </div>
 
           <p className="mt-6 text-center text-sm text-slate-500">

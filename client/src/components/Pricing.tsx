@@ -28,9 +28,9 @@ const plans = [
       "Priority model access",
       "Invoice-verified provisioning",
     ],
-    cta: "Request access",
-    href: SIGNUP_FORM_URL,
-    external: true,
+    cta: SIGNUP_FORM_URL ? "Request access" : "Sign in",
+    href: SIGNUP_FORM_URL ?? "/sign-in",
+    external: Boolean(SIGNUP_FORM_URL),
     highlighted: true,
   },
 ];

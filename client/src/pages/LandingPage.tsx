@@ -37,14 +37,23 @@ export function LandingPage() {
                   Try 50k tokens free
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                <a
-                  href={SIGNUP_FORM_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
-                >
-                  Request account with invoice
-                </a>
+                {SIGNUP_FORM_URL ? (
+                  <a
+                    href={SIGNUP_FORM_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
+                  >
+                    Request account with invoice
+                  </a>
+                ) : (
+                  <Link
+                    to="/sign-in"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
+                  >
+                    Sign in
+                  </Link>
+                )}
               </div>
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -134,14 +143,16 @@ export function LandingPage() {
             <Link to="/sign-in" className="hover:text-slate-300">
               Sign in
             </Link>
-            <a
-              href={SIGNUP_FORM_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-slate-300"
-            >
-              Request access
-            </a>
+            {SIGNUP_FORM_URL ? (
+              <a
+                href={SIGNUP_FORM_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-slate-300"
+              >
+                Request access
+              </a>
+            ) : null}
           </div>
         </div>
       </footer>

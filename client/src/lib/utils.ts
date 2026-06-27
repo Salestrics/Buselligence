@@ -5,9 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const SIGNUP_FORM_URL =
-  import.meta.env.VITE_SIGNUP_FORM_URL ??
-  "https://us.posthog.com/external_surveys/019ef6e9-52a9-0000-3656-79f8425b5e13";
+export const SIGNUP_FORM_URL: string | null =
+  import.meta.env.VITE_SIGNUP_FORM_URL || null;
 
 export const FREE_TOKEN_LIMIT = 50_000;
 
