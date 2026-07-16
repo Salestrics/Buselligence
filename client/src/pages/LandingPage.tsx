@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, MessageSquare, Sparkles } from "lucide-react";
+import { ArrowRight, GitBranch, MessageSquare, Sparkles } from "lucide-react";
 import { Features } from "../components/Features";
 import { Navbar } from "../components/Navbar";
 import { Pricing } from "../components/Pricing";
-import { SIGNUP_FORM_URL } from "../lib/utils";
 
 export function LandingPage() {
   return (
@@ -16,51 +15,50 @@ export function LandingPage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-200">
                 <Sparkles className="h-3.5 w-3.5" />
-                Powered by BizzyB
+                Open source · MIT · BYOK
               </div>
 
               <h1 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl">
-                Your business intelligence copilot
+                Business intelligence chat with your API keys
               </h1>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-400">
-                Buselligence turns complex data questions into clear answers —
-                SQL, KPIs, forecasts, and executive narratives in a ChatGPT-style
-                experience built for operators.
+                Buselligence is an open-source BI copilot. Bring your own OpenAI,
+                Anthropic, or Google keys, connect MCP servers for live data, and
+                chat about KPIs, SQL, forecasts, and board metrics — without
+                platform lock-in.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link
-                  to="/chat"
+                  to="/sign-up"
                   className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 text-sm font-medium text-white transition hover:bg-brand-400"
                 >
-                  Try 50k tokens free
+                  Get started free
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                {SIGNUP_FORM_URL ? (
-                  <a
-                    href={SIGNUP_FORM_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
-                  >
-                    Request account with invoice
-                  </a>
-                ) : (
-                  <Link
-                    to="/sign-in"
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
-                  >
-                    Sign in
-                  </Link>
-                )}
+                <Link
+                  to="/chat"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
+                >
+                  Open chat
+                </Link>
+                <a
+                  href="https://github.com/Salestrics/Buselligence"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
+                >
+                  <GitBranch className="h-4 w-4" />
+                  GitHub
+                </a>
               </div>
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
                 {[
-                  ["50k", "Free anonymous tokens"],
-                  ["BizzyB", "The Buselligence AI"],
-                  ["Invoice", "Verified sign-up only"],
+                  ["BYOK", "Your API keys"],
+                  ["MCP", "Live data tools"],
+                  ["MIT", "Fully open source"],
                 ].map(([value, label]) => (
                   <div
                     key={label}
@@ -93,21 +91,20 @@ export function LandingPage() {
                       You
                     </p>
                     <p className="mt-2 text-sm text-slate-200">
-                      What KPIs should I track for a B2B SaaS with usage-based
-                      pricing?
+                      Query last quarter&apos;s NRR by cohort using our Postgres
+                      MCP server.
                     </p>
                   </div>
 
                   <div className="rounded-2xl border border-brand-500/20 bg-brand-500/10 p-4 text-left">
                     <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-brand-200">
                       <MessageSquare className="h-3.5 w-3.5" />
-                      BizzyB
+                      Buselligence
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-200">
-                      Focus on net revenue retention, expansion MRR, consumption
-                      depth per account, gross margin by cohort, and payback
-                      period by channel. I can also draft a board-ready KPI
-                      tree.
+                      I called your Postgres MCP tool and found expansion-heavy
+                      cohorts drove NRR to 118%. Want a board-ready summary or
+                      the underlying SQL?
                     </p>
                   </div>
                 </div>
@@ -125,14 +122,14 @@ export function LandingPage() {
           <div className="text-center md:text-left">
             <p>© {new Date().getFullYear()} Salestrics Inc</p>
             <p className="mt-1">
-              Powered by{" "}
+              Open source under{" "}
               <a
-                href="https://salestrics.com"
+                href="https://github.com/Salestrics/Buselligence/blob/main/LICENSE"
                 target="_blank"
                 rel="noreferrer"
                 className="text-slate-400 transition hover:text-white"
               >
-                Salestrics
+                MIT License
               </a>
             </p>
           </div>
@@ -140,19 +137,12 @@ export function LandingPage() {
             <Link to="/chat" className="hover:text-slate-300">
               Chat
             </Link>
-            <Link to="/sign-in" className="hover:text-slate-300">
-              Sign in
+            <Link to="/settings" className="hover:text-slate-300">
+              Settings
             </Link>
-            {SIGNUP_FORM_URL ? (
-              <a
-                href={SIGNUP_FORM_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-slate-300"
-              >
-                Request access
-              </a>
-            ) : null}
+            <Link to="/sign-up" className="hover:text-slate-300">
+              Sign up
+            </Link>
           </div>
         </div>
       </footer>

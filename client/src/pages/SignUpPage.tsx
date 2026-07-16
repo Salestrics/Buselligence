@@ -1,11 +1,12 @@
 import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AlertCircle, Loader2, Lock } from "lucide-react";
+import { AlertCircle, Loader2, UserPlus } from "lucide-react";
 import { Navbar } from "../components/Navbar";
-import { signIn } from "../lib/auth-client";
+import { signUp } from "../lib/auth-client";
 
-export function SignInPage() {
+export function SignUpPage() {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -16,16 +17,20 @@ export function SignInPage() {
     setError(null);
     setLoading(true);
 
-    const { error: signInError } = await signIn.email({ email, password });
+    const { error: signUpError } = await signUp.email({
+      name,
+      email,
+      password,
+    });
 
     setLoading(false);
 
-    if (signInError) {
-      setError(signInError.message ?? "Unable to sign in");
+    if (signUpError) {
+      setError(signUpError.message ?? "Unable to create account");
       return;
     }
 
-    navigate("/chat");
+    navigate("/settings");
   }
 
   return (
@@ -35,16 +40,28 @@ export function SignInPage() {
       <main className="mx-auto flex max-w-md flex-col px-6 py-16">
         <div className="rounded-3xl border border-white/8 bg-white/[0.03] p-8">
           <div className="mb-6 inline-flex rounded-xl bg-brand-500/15 p-3 text-brand-300">
-            <Lock className="h-5 w-5" />
+            <UserPlus className="h-5 w-5" />
           </div>
 
-          <h1 className="text-2xl font-semibold text-white">Sign in</h1>
+          <h1 className="text-2xl font-semibold text-white">Create account</h1>
           <p className="mt-2 text-sm text-slate-400">
-            Welcome back. Sign in to use your API keys, MCP integrations, and
-            saved conversations.
+            Buselligence is open source and MIT-licensed. Sign up, add your own
+            API key, and connect MCP servers for live business intelligence.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+            <label className="block">
+              <span className="mb-2 block text-sm text-slate-300">Name</span>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-xl border border-white/10 bg-[#0b1020] px-4 py-3 text-white outline-none transition focus:border-brand-500"
+                placeholder="Your name"
+              />
+            </label>
+
             <label className="block">
               <span className="mb-2 block text-sm text-slate-300">Email</span>
               <input
@@ -62,10 +79,11 @@ export function SignInPage() {
               <input
                 type="password"
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-xl border border-white/10 bg-[#0b1020] px-4 py-3 text-white outline-none transition focus:border-brand-500"
-                placeholder="••••••••"
+                placeholder="At least 8 characters"
               />
             </label>
 
@@ -82,30 +100,14 @@ export function SignInPage() {
               className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-brand-400 disabled:opacity-60"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              Sign in
+              Create account
             </button>
           </form>
 
-          <div className="mt-8 rounded-2xl border border-brand-500/20 bg-brand-500/10 p-4">
-            <p className="text-sm font-medium text-brand-100">
-              New to Buselligence?
-            </p>
-            <p className="mt-2 text-sm leading-6 text-brand-100/80">
-              Create a free account, add your API key in Settings, and connect
-              MCP servers for live BI workflows.
-            </p>
-            <Link
-              to="/sign-up"
-              className="mt-4 inline-flex text-sm font-medium text-white hover:text-brand-200"
-            >
-              Create account →
-            </Link>
-          </div>
-
           <p className="mt-6 text-center text-sm text-slate-500">
-            Exploring without an account?{" "}
-            <Link to="/chat" className="text-brand-300 hover:text-white">
-              Try demo chat
+            Already have an account?{" "}
+            <Link to="/sign-in" className="text-brand-300 hover:text-white">
+              Sign in
             </Link>
           </p>
         </div>

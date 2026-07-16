@@ -1,12 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
 import { useSession, signOut } from "../lib/auth-client";
-import { cn, SIGNUP_FORM_URL } from "../lib/utils";
 
 const links = [
   { href: "/#features", label: "Features" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/chat", label: "Try Free" },
+  { href: "/#integrations", label: "MCP" },
+  { href: "/chat", label: "Chat" },
 ];
 
 export function Navbar() {
@@ -41,6 +40,12 @@ export function Navbar() {
           {session?.user ? (
             <>
               <Link
+                to="/settings"
+                className="hidden rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:text-white sm:inline-flex"
+              >
+                Settings
+              </Link>
+              <Link
                 to="/chat"
                 className="rounded-full bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-400"
               >
@@ -61,18 +66,12 @@ export function Navbar() {
               >
                 Sign in
               </Link>
-              {SIGNUP_FORM_URL ? (
-                <a
-                  href={SIGNUP_FORM_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={cn(
-                    "rounded-full bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-400"
-                  )}
-                >
-                  Request Access
-                </a>
-              ) : null}
+              <Link
+                to="/sign-up"
+                className="rounded-full bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-400"
+              >
+                Get started
+              </Link>
             </>
           )}
         </div>

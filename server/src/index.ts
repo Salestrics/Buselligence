@@ -8,6 +8,7 @@ import {
   checkAnonymousLimit,
   createChatStream,
   createConversationTitle,
+  userHasConfiguredApiKey,
   type StreamChatOptions,
 } from "./chat.js";
 import {
@@ -19,6 +20,22 @@ import {
   saveConversation,
   type ChatMessage,
 } from "./db.js";
+import {
+  createMcpServer,
+  deleteMcpServer,
+  getMcpServer,
+  listMcpServers,
+  testMcpServer,
+  updateMcpServer,
+  type McpServerInput,
+} from "./mcp/manager.js";
+import { listProviders } from "./providers/index.js";
+import {
+  getPublicSettings,
+  resolveCredentials,
+  saveUserSettings,
+} from "./settings.js";
+import type { AIProviderId } from "./providers/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -33,7 +50,6 @@ app.use(
 );
 
 app.all("/api/auth/{*splat}", authHandler);
-
 app.use(express.json());
 
 async function getSession(req: express.Request) {
@@ -41,7 +57,144 @@ async function getSession(req: express.Request) {
 }
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, model: "BizzyB" });
+  const hasServerKey = Boolean(process.env.OPENAI_API_KEY);
+  res.json({
+    ok: true,
+    name: "Buselligence",
+    version: "2.0.0",
+    license: "MIT",
+    features: {
+      byok: true,
+      mcp: true,
+      providers: listProviders().map((provider) => provider.id),
+      serverDefaultKey: hasServerKey,
+    },
+  });
+});
+
+app.get("/api/providers", (_req, res) => {
+  res.json({ providers: listProviders() });
+});
+
+app.get("/api/settings", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  res.json({
+    settings: getPublicSettings(session.user.id),
+    hasServerDefaultKey: Boolean(process.env.OPENAI_API_KEY),
+  });
+});
+
+app.put("/api/settings", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  const provider = req.body?.provider as AIProviderId | undefined;
+  if (!provider) {
+    return res.status(400).json({ error: "Provider is required" });
+  }
+
+  try {
+    const settings = saveUserSettings(session.user.id, {
+      provider,
+      model: req.body?.model,
+      apiKey:
+        req.body?.apiKey === null
+          ? null
+          : typeof req.body?.apiKey === "string"
+            ? req.body.apiKey
+            : undefined,
+      apiBaseUrl:
+        req.body?.apiBaseUrl === null
+          ? null
+          : typeof req.body?.apiBaseUrl === "string"
+            ? req.body.apiBaseUrl
+            : undefined,
+    });
+
+    res.json({ settings });
+  } catch (error) {
+    res.status(400).json({
+      error: error instanceof Error ? error.message : "Failed to save settings",
+    });
+  }
+});
+
+app.get("/api/mcp/servers", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  res.json({ servers: listMcpServers(session.user.id) });
+});
+
+app.post("/api/mcp/servers", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  const input = req.body as McpServerInput;
+  if (!input?.name || !input?.transport || !input?.config) {
+    return res.status(400).json({ error: "name, transport, and config are required" });
+  }
+
+  const server = createMcpServer(session.user.id, input);
+  res.status(201).json({ server });
+});
+
+app.put("/api/mcp/servers/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  const server = updateMcpServer(
+    req.params.id,
+    session.user.id,
+    req.body as Partial<McpServerInput>
+  );
+
+  if (!server) {
+    return res.status(404).json({ error: "MCP server not found" });
+  }
+
+  res.json({ server });
+});
+
+app.delete("/api/mcp/servers/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  const deleted = deleteMcpServer(req.params.id, session.user.id);
+  if (!deleted) {
+    return res.status(404).json({ error: "MCP server not found" });
+  }
+
+  res.json({ ok: true });
+});
+
+app.post("/api/mcp/servers/:id/test", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  const server = getMcpServer(req.params.id, session.user.id);
+  if (!server) {
+    return res.status(404).json({ error: "MCP server not found" });
+  }
+
+  const result = await testMcpServer(server);
+  res.json(result);
 });
 
 app.get("/api/usage", async (req, res) => {
@@ -51,11 +204,16 @@ app.get("/api/usage", async (req, res) => {
     | undefined;
 
   if (session?.user) {
+    const credentials = resolveCredentials(session.user.id);
     return res.json({
       authenticated: true,
       tokensUsed: 0,
       limit: null,
       canSave: true,
+      hasApiKey: Boolean(credentials),
+      apiKeySource: credentials?.source ?? null,
+      provider: credentials?.provider ?? null,
+      model: credentials?.model ?? null,
     });
   }
 
@@ -66,14 +224,19 @@ app.get("/api/usage", async (req, res) => {
   res.json({
     authenticated: false,
     tokensUsed,
-    limit: FREE_TOKEN_LIMIT,
+    limit: process.env.OPENAI_API_KEY ? FREE_TOKEN_LIMIT : null,
     canSave: false,
+    hasApiKey: Boolean(process.env.OPENAI_API_KEY),
+    apiKeySource: process.env.OPENAI_API_KEY ? "server" : null,
+    provider: process.env.OPENAI_API_KEY ? "openai" : null,
+    model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
   });
 });
 
 app.post("/api/chat", async (req, res) => {
   const session = await getSession(req);
   const isAuthenticated = Boolean(session?.user);
+  const userId = session?.user?.id;
   const anonymousSessionId = req.headers["x-anonymous-session"] as
     | string
     | undefined;
@@ -83,15 +246,36 @@ app.post("/api/chat", async (req, res) => {
     return res.status(400).json({ error: "Messages are required" });
   }
 
-  const limitCheck = checkAnonymousLimit(anonymousSessionId, isAuthenticated);
+  const hasUserApiKey = userHasConfiguredApiKey(userId);
+  const limitCheck = checkAnonymousLimit(
+    anonymousSessionId,
+    isAuthenticated,
+    hasUserApiKey
+  );
+
   if (!limitCheck.allowed) {
     return res.status(402).json({
       error: "token_limit_reached",
       message:
-        "You've used your 50,000 free tokens. Sign in to continue chatting.",
+        "You've used the demo token allowance. Sign in and add your own API key to continue.",
       tokensUsed: limitCheck.tokensUsed,
       limit: limitCheck.limit,
-      signupFormUrl: process.env.VITE_SIGNUP_FORM_URL,
+    });
+  }
+
+  if (!isAuthenticated && !process.env.OPENAI_API_KEY) {
+    return res.status(401).json({
+      error: "api_key_required",
+      message:
+        "Sign in and add your API key in Settings, or configure OPENAI_API_KEY for demo mode.",
+    });
+  }
+
+  if (isAuthenticated && !resolveCredentials(userId)) {
+    return res.status(400).json({
+      error: "api_key_required",
+      message:
+        "Add your API key in Settings before chatting. Buselligence is bring-your-own-API.",
     });
   }
 
@@ -102,14 +286,15 @@ app.post("/api/chat", async (req, res) => {
   try {
     const chatOptions: StreamChatOptions = {
       messages,
+      userId,
       anonymousSessionId,
       isAuthenticated,
     };
 
     const { stream, getUsage } = await createChatStream(chatOptions);
 
-    for await (const chunk of stream) {
-      res.write(`data: ${JSON.stringify({ type: "delta", content: chunk })}\n\n`);
+    for await (const event of stream) {
+      res.write(`data: ${JSON.stringify(event)}\n\n`);
     }
 
     const usage = await getUsage();
@@ -122,9 +307,12 @@ app.post("/api/chat", async (req, res) => {
         type: "done",
         usage,
         tokensUsed: updatedTokens,
-        limit: isAuthenticated ? null : FREE_TOKEN_LIMIT,
+        limit:
+          isAuthenticated || hasUserApiKey ? null : FREE_TOKEN_LIMIT,
         requiresSignIn:
-          !isAuthenticated && updatedTokens >= FREE_TOKEN_LIMIT,
+          !isAuthenticated &&
+          !hasUserApiKey &&
+          updatedTokens >= FREE_TOKEN_LIMIT,
         canSave: isAuthenticated,
       })}\n\n`
     );
@@ -148,11 +336,11 @@ app.get("/api/conversations", async (req, res) => {
     return res.status(401).json({ error: "Authentication required" });
   }
 
-  const conversations = listConversations(session.user.id).map((c) => ({
-    id: c.id,
-    title: c.title,
-    createdAt: c.created_at,
-    updatedAt: c.updated_at,
+  const conversations = listConversations(session.user.id).map((conversation) => ({
+    id: conversation.id,
+    title: conversation.title,
+    createdAt: conversation.created_at,
+    updatedAt: conversation.updated_at,
   }));
 
   res.json({ conversations });

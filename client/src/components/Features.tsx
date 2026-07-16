@@ -1,17 +1,23 @@
-import { BarChart3, Brain, Database, LineChart, Shield, Zap } from "lucide-react";
+import { BarChart3, Brain, KeyRound, LineChart, Plug, Shield } from "lucide-react";
 
 const features = [
   {
-    icon: Brain,
-    title: "Powered by BizzyB",
+    icon: KeyRound,
+    title: "Bring your own API",
     description:
-      "Ask natural-language questions and get analyst-grade answers from BizzyB, the Buselligence AI.",
+      "Use your OpenAI, Anthropic, or Google API keys. No vendor lock-in — you control cost, models, and data residency.",
   },
   {
-    icon: Database,
-    title: "SQL & data modeling",
+    icon: Plug,
+    title: "MCP integrations",
     description:
-      "Generate queries, explain schemas, and design metrics that leadership teams actually trust.",
+      "Connect Model Context Protocol servers to query warehouses, files, APIs, and custom tools during chat.",
+  },
+  {
+    icon: Brain,
+    title: "BI-native copilot",
+    description:
+      "Ask natural-language questions and get analyst-grade answers for KPIs, SQL, forecasting, and executive narratives.",
   },
   {
     icon: LineChart,
@@ -21,21 +27,15 @@ const features = [
   },
   {
     icon: BarChart3,
-    title: "Executive-ready output",
+    title: "Tool-augmented analysis",
     description:
-      "Turn raw analysis into crisp narratives your C-suite can act on in the next meeting.",
+      "When MCP tools are connected, the model can run live queries and ground answers in your actual data.",
   },
   {
     icon: Shield,
-    title: "Enterprise access control",
+    title: "Open source MIT",
     description:
-      "Accounts are provisioned after invoice verification — no self-serve sign-up, no shadow IT.",
-  },
-  {
-    icon: Zap,
-    title: "50k free tokens",
-    description:
-      "Try Buselligence instantly without an account. Sign in to save conversations and keep going.",
+      "Self-host, fork, and extend freely. API keys are encrypted at rest and never shared across users.",
   },
 ];
 
@@ -48,12 +48,12 @@ export function Features() {
             Features
           </p>
           <h2 className="mt-3 text-4xl font-semibold tracking-tight text-white">
-            Business intelligence, conversational
+            Open BI chat, your keys, your data
           </h2>
           <p className="mt-4 text-lg text-slate-400">
-            Buselligence combines the fluency of ChatGPT with the rigor of a
-            seasoned analytics team — purpose-built for operators, founders, and
-            data leaders.
+            Buselligence is an open-source business intelligence chatbot built
+            for freedom of AI usage. Connect any supported provider and extend
+            capabilities with MCP.
           </p>
         </div>
 

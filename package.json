@@ -1,7 +1,7 @@
 {
   "name": "buselligence",
   "version": "1.0.0",
-  "description": "Business intelligence chatbot powered by BizzyB, the Buselligence AI",
+  "description": "Open-source BYOK business intelligence chatbot with MCP support",
   "license": "MIT",
   "scripts": {
     "dev": "concurrently -n server,client -c blue,green \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
