@@ -4,6 +4,7 @@ import { useSession, signOut } from "../lib/auth-client";
 
 const links = [
   { href: "/#features", label: "Platform" },
+  { href: "/kernel", label: "Kernel" },
   { href: "/core", label: "AI Core" },
   { href: "/manifesto", label: "Manifesto" },
   { href: "/workspace", label: "Workspace" },
@@ -39,6 +40,12 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           {session?.user ? (
             <>
+              <Link
+                to="/kernel"
+                className="hidden rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:text-white sm:inline-flex"
+              >
+                Kernel
+              </Link>
               <Link
                 to="/core"
                 className="hidden rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:text-white sm:inline-flex"

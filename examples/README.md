@@ -1,0 +1,60 @@
+# Buselligence Examples
+
+AI-native project templates for the Buselligence Kernel runtime.
+
+Each example demonstrates how to build, run, and extend AI-powered applications using skills, agents, and the unified execution layer.
+
+## Templates
+
+| Example | Description |
+|---------|-------------|
+| [ai-chatbot](./ai-chatbot) | Conversational AI with memory and tool use |
+| [autonomous-agent](./autonomous-agent) | Self-directed agent with planning and execution |
+| [crm-app](./crm-app) | CRM with AI insights |
+| [analytics-dashboard](./analytics-dashboard) | Data visualization and BI |
+| [coding-agent](./coding-agent) | AI pair programmer with codebase context |
+| [mcp-server](./mcp-server) | Custom Model Context Protocol server |
+| [rag-system](./rag-system) | RAG with local embeddings |
+| [saas-builder](./saas-builder) | Full-stack SaaS starter |
+
+## Quick start
+
+```bash
+# Copy a template
+cp -r examples/ai-chatbot my-project
+cd my-project
+
+# Initialize with kernel lockfile
+curl -X POST http://localhost:3001/api/kernel/lockfile \
+  -H "Content-Type: application/json" \
+  --cookie "session=..." \
+  -d '{}'
+
+# Run through the kernel
+curl -X POST http://localhost:3001/api/kernel/execute \
+  -H "Content-Type: application/json" \
+  --cookie "session=..." \
+  -d '{"action":"chat","input":{"message":"Hello"}}'
+```
+
+## buselligence.lock
+
+Each project should include a `buselligence.lock` file for reproducible AI environments:
+
+```json
+{
+  "version": "1.0.0",
+  "models": { "default": "gpt-4o-mini", "reasoning": "gpt-4o" },
+  "agents": { "software_engineer": "1.0.0" },
+  "skills": { "build-react-app": "1.0.0" },
+  "mcpServers": ["filesystem"],
+  "dependencies": { "buselligence": "8.0.0", "kernel": "1.0.0" }
+}
+```
+
+Generate from the Kernel UI at `/kernel` or via the API.
+
+## Learn more
+
+- [Kernel documentation](../docs/KERNEL.md)
+- [Platform overview](../docs/PLATFORM.md)

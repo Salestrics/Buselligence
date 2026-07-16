@@ -94,6 +94,8 @@ import { registerPlatformRoutes } from "./platform/routes.js";
 import "./platform/schema.js";
 import { registerCoreRoutes } from "./core/routes.js";
 import "./core/schema.js";
+import { registerKernelRoutes } from "./kernel/routes.js";
+import "./kernel/schema.js";
 import { getRouterConfig, routeModel } from "./router/model-router.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -119,18 +121,32 @@ registerBiRoutes(app, getSession);
 registerStudioRoutes(app, getSession);
 registerPlatformRoutes(app, getSession);
 registerCoreRoutes(app, getSession);
+registerKernelRoutes(app, getSession);
 
 app.get("/api/health", (_req, res) => {
   const hasServerKey = Boolean(process.env.OPENAI_API_KEY);
   res.json({
     ok: true,
     name: "Buselligence",
-    version: "7.0.0",
+    version: "8.0.0",
     tagline: "AI for Everyone. Owned by Everyone.",
     mission: "Give every person the power of AI.",
-    category: "Open Source AI Operating System",
+    primitive: "The open-source runtime for building, running, and extending AI-powered applications.",
+    category: "Open Source AI Runtime",
     license: "MIT",
     features: {
+      kernel: true,
+      skillsSystem: true,
+      agentRegistry: true,
+      evaluationFramework: true,
+      promptWorkspace: true,
+      aiObservability: true,
+      costIntelligence: true,
+      reproducibleEnvironments: true,
+      extensionSdk: true,
+      projectTemplates: true,
+      localFirst: true,
+      communityHub: true,
       aiOperatingLayer: true,
       autonomousProjectManager: true,
       multiAgentTeams: true,

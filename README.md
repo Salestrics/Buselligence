@@ -5,7 +5,7 @@
 <h1 align="center">AI for Everyone. Owned by Everyone.</h1>
 
 <p align="center">
-  <strong>The Open Source AI Operating System</strong><br />
+  <strong>The open-source runtime for building, running, and extending AI-powered applications.</strong><br />
   An open-source AI empowerment platform — analyze, create, automate, learn, build, and solve problems with AI.
 </p>
 
@@ -30,6 +30,23 @@ Enterprise companies have AI teams. Developers have coding tools. Data scientist
 - Open source
 - User-owned data
 - User-controlled AI
+
+## Buselligence Kernel
+
+The unified execution layer. Everything runs through the kernel:
+
+**Identity · Context · Permissions · Memory · Tools · Agents · Models · Events · Execution**
+
+- **Skills system** — reusable capabilities agents compose
+- **Agent registry** — versioned agents with capabilities and permissions
+- **Evaluation framework** — accuracy, cost, speed, reliability benchmarks
+- **AI observability** — full execution traces
+- **Cost intelligence** — BYOK token and spend tracking
+- **buselligence.lock** — reproducible AI environments
+- **Extension SDK** — `createBuselligencePlugin()` for ecosystem plugins
+- **Local-first** — local models, embeddings, vector DB, offline dev
+
+See [docs/KERNEL.md](docs/KERNEL.md) and [examples/](examples/).
 
 ## Platform pillars
 
@@ -71,6 +88,7 @@ npm run dev
 | http://localhost:5173/workspace | Your AI workspace |
 | http://localhost:5173/chat | Universal AI assistant |
 | http://localhost:5173/studio | Developer studio |
+| http://localhost:5173/kernel | Buselligence Kernel (runtime) |
 | http://localhost:5173/core | AI Operating Layer (Brain) |
 
 ## The Manifesto
