@@ -18,11 +18,8 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0b1020]/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="/" className="flex items-center">
           <Logo size="sm" />
-          <span className="text-lg font-semibold tracking-tight">
-            Buselligence
-          </span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./Buselligence_Logo" alt="Buselligence — Unlocking the Power of AI" width="520" />
+</p>
+
 # Buselligence
 
 **The open-source AI workspace where businesses analyze, build, and automate.**
