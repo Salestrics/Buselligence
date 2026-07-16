@@ -1,47 +1,62 @@
 # Architecture
 
-Buselligence is a monorepo with a React frontend, Express API, and SQLite persistence. Version 2.0 is built around **BYOK** (bring your own API) and **MCP** (Model Context Protocol) integrations.
+Buselligence v4 is a self-hosted AI analyst platform: React frontend, Express API, SQLite persistence, semantic layer, first-class data connectors, analyst agents, dashboards, governance, and MCP as an extension layer.
 
 ## High-level diagram
 
 ```
-┌─────────────────┐     SSE / REST      ┌──────────────────────────────────┐
-│  React Client   │ ◄──────────────────►│  Express API (server/src/index.ts)│
-│  Vite + Tailwind│                     │                                   │
-└─────────────────┘                     │  ┌────────────┐  ┌─────────────┐ │
-                                        │  │ BetterAuth │  │ Chat Engine │ │
-                                        │  └─────┬──────┘  └──────┬──────┘ │
-                                        │        │                 │        │
-                                        │  ┌─────▼──────┐  ┌──────▼──────┐ │
-                                        │  │ auth.db    │  │ Providers   │ │
-                                        │  └────────────┘  │ OpenAI      │ │
-                                        │                  │ Anthropic   │ │
-                                        │  ┌────────────┐  │ Google      │ │
-                                        │  │ buselligence│  └──────┬──────┘ │
-                                        │  │ .db        │         │        │
-                                        │  │ - settings │  ┌──────▼──────┐ │
-                                        │  │ - mcp      │  │ MCP Manager │ │
-                                        │  │ - convos   │  │ (stdio/sse/ │ │
-                                        │  └────────────┘  │  http)      │ │
-                                        └──────────────────┴──────┬──────┴──┘
-                                                                │
-                                                    ┌───────────▼───────────┐
-                                                    │  External MCP Servers   │
-                                                    │  Postgres, FS, custom... │
-                                                    └─────────────────────────┘
+┌─────────────────┐     SSE / REST      ┌────────────────────────────────────────────┐
+│  React Client   │ ◄──────────────────►│  Express API (server/src/index.ts)         │
+│  /platform      │                     │                                            │
+│  /chat          │                     │  ┌──────────┐  ┌────────────────────────┐  │
+└─────────────────┘                     │  │BetterAuth│  │ Chat + Analyst Agents  │  │
+                                        │  └────┬─────┘  └───────────┬────────────┘  │
+                                        │       │                    │               │
+                                        │  ┌────▼────────────────────▼────────────┐  │
+                                        │  │         Semantic Layer Manager         │  │
+                                        │  │  metrics · relationships · rules       │  │
+                                        │  └────┬────────────────────┬────────────┘  │
+                                        │       │                    │               │
+                    ┌───────────────────┤  ┌────▼─────┐  ┌──────────▼──────────┐     │
+                    │ Data Connectors   │  │Governance│  │ Dashboard Generator │     │
+                    │ PG·Snowflake·SF   │  │ Audit Log│  │ Scheduled Intel     │     │
+                    └───────────────────┤  └──────────┘  └─────────────────────┘     │
+                                        │                                            │
+                                        │  ┌────────────┐  ┌─────────────────────┐   │
+                                        │  │ Providers  │  │ MCP Manager         │   │
+                                        │  │ OpenAI     │  │ + Marketplace       │   │
+                                        │  │ Anthropic  │  │ (extension layer)   │   │
+                                        │  │ Google     │  └──────────┬──────────┘   │
+                                        │  └────────────┘             │              │
+                                        └─────────────────────────────┼──────────────┘
+                                                                      │
+                                                          ┌───────────▼───────────┐
+                                                          │ External Data Sources   │
+                                                          │ DBs · SaaS · MCP servers│
+                                                          └─────────────────────────┘
 ```
 
-## Chat flow
+## Chat flow (v4)
 
-1. Client sends `POST /api/chat` with message history
-2. Server resolves credentials:
-   - Authenticated user → decrypt key from `user_settings`
-   - Anonymous → optional `OPENAI_API_KEY` demo mode
-3. Server loads enabled MCP servers for the user
-4. MCP manager connects, lists tools, namespaces them
-5. Provider adapter streams chat with tool-calling loop:
-   - Model requests tool → execute via MCP → feed result back → continue
-6. Events stream to client: `delta`, `tool_call`, `tool_result`, `status`, `done`
+1. Client sends `POST /api/chat` with `agentId`, `noSqlMode`, and message history
+2. Server resolves credentials (BYOK or demo key)
+3. Server builds semantic context (metrics, relationships, rules, connector sources)
+4. Selected analyst agent system prompt is injected (Financial, Sales, etc.)
+5. MCP tools are loaded and namespaced
+6. Provider streams with tool-calling loop; audit log records data access
+7. In no-SQL mode, SQL is hidden from the user — only business narrative, charts, recommendations
+
+## Analyst agents
+
+| Agent | Focus |
+|-------|-------|
+| Data Analyst | SQL, schema exploration, data quality |
+| Financial Analyst | Revenue, NRR, churn, CAC, forecasting |
+| Sales Analyst | Pipeline, win rates, deal velocity |
+| Marketing Analyst | Acquisition, campaigns, attribution |
+| Operations Analyst | Efficiency, capacity, SLAs |
+| Executive Assistant | Cross-functional summaries and narratives |
+| Buselligence AI | General orchestrator (default) |
 
 ## Database schema
 
@@ -49,54 +64,45 @@ Buselligence is a monorepo with a React frontend, Express API, and SQLite persis
 
 | Table | Purpose |
 |-------|---------|
-| `user_settings` | Provider, model, encrypted API key, base URL |
+| `user_settings` | Provider, model, encrypted API key |
 | `mcp_servers` | MCP server config per user |
-| `conversations` | Saved chat history (authenticated) |
-| `anonymous_sessions` | Demo token usage (optional) |
+| `conversations` | Saved chat history |
+| `semantic_metrics` | KPI definitions, formulas, sources |
+| `semantic_relationships` | Entity graph (Customer → Account → Revenue) |
+| `semantic_rules` | Business rules (exclude test accounts, etc.) |
+| `data_connectors` | First-class connector configs (encrypted) |
+| `dashboards` | AI-generated dashboard specs |
+| `audit_logs` | Governance: who accessed what |
+| `scheduled_jobs` | Cron-style intelligence briefings |
+| `intelligence_briefings` | Generated briefing content |
+| `marketplace_installs` | Installed MCP marketplace presets |
+| `encryption_keys` | Envelope encryption DEK metadata |
 
 ### `auth.db` (BetterAuth)
 
 Managed by BetterAuth — users, sessions, accounts.
 
-## Provider abstraction
-
-All AI providers implement `AIProviderAdapter`:
-
-```typescript
-interface AIProviderAdapter {
-  id: AIProviderId;
-  streamChat(context: StreamChatContext): AsyncGenerator<ChatStreamEvent>;
-  estimateUsage(messages, completionText): StreamUsage;
-}
-```
-
-`StreamChatContext` includes messages, credentials, MCP tools, and an `executeTool` callback.
-
 ## Encryption
 
-User API keys are encrypted with AES-256-GCM (`server/src/crypto.ts`):
+Two layers:
+
+1. **AES-256-GCM** (`server/src/crypto.ts`) — direct key encryption for API keys
+2. **Envelope encryption** (`server/src/crypto/envelope.ts`) — KMS/Vault DEK wrapping
 
 ```
-stored = base64(iv) : base64(authTag) : base64(ciphertext)
+KMS/Vault → Data Encryption Key → Encrypted User Key
 ```
 
-Key derived from `ENCRYPTION_KEY` or `BETTER_AUTH_SECRET` via SHA-256.
-
-## MCP manager
-
-`server/src/mcp/manager.ts`:
-
-- Creates transports (stdio, SSE, HTTP) per server config
-- Connects ephemeral MCP clients per request
-- Namespaces tools: `{server}__{tool}`
-- Executes `callTool` and normalizes results for the LLM
+Providers: `local` (default), `aws`, `vault`, `gcp` via `KMS_PROVIDER`.
 
 ## Frontend routes
 
 | Route | Component | Auth |
 |-------|-----------|------|
 | `/` | LandingPage | — |
+| `/platform` | BiPlatformPage | Required |
 | `/chat` | ChatPage | Optional |
+| `/outbound` | OutboundPage | Required |
 | `/settings` | SettingsPage | Required |
 | `/sign-in` | SignInPage | — |
 | `/sign-up` | SignUpPage | — |
@@ -105,23 +111,26 @@ Key derived from `ENCRYPTION_KEY` or `BETTER_AUTH_SECRET` via SHA-256.
 
 | Layer | Controls |
 |-------|----------|
-| `.env` | Server secrets, optional demo key, CORS |
-| User Settings | Per-user provider, model, API key |
-| MCP Servers | Per-user data source connections |
+| `.env` | Server secrets, KMS provider, demo key |
+| Semantic Layer | Metrics, relationships, business rules |
+| Data Connectors | Warehouse and SaaS connections |
+| User Settings | Per-user AI provider and API key |
+| MCP Servers / Marketplace | Extension integrations |
 
 ## Production considerations
 
 - Set `NODE_ENV=production` — serves built client from Express
 - Use strong `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY`
+- Consider `KMS_PROVIDER=aws` or `vault` for envelope encryption
 - Back up `server/data/*.db` or migrate to PostgreSQL for scale
 - MCP stdio processes run on the same host — isolate in containers if needed
-- Set `DISABLE_SIGN_UP=true` for private deployments
 
 ## Extension points
 
 | Area | How to extend |
 |------|---------------|
+| Metrics | Add via `/api/semantic/metrics` or UI at `/platform` |
+| Connectors | Extend `server/src/connectors/types.ts` definitions |
+| Analyst agents | Add definition in `server/src/agents/definitions.ts` |
+| MCP marketplace | Add preset in `server/src/marketplace/presets.ts` |
 | AI providers | Add adapter in `server/src/providers/` |
-| MCP transports | Extend `createTransport()` in MCP manager |
-| Auth | BetterAuth plugins / OAuth |
-| Storage | Replace SQLite with Postgres adapter |

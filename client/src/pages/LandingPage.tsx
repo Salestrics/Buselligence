@@ -19,14 +19,14 @@ export function LandingPage() {
               </div>
 
               <h1 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl">
-                Business intelligence chat with your API keys
+                The self-hosted AI analyst that understands your business
               </h1>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-400">
-                Buselligence is an open-source BI copilot. Bring your own OpenAI,
-                Anthropic, or Google keys, connect MCP servers for live data, and
-                chat about KPIs, SQL, forecasts, and board metrics — without
-                platform lock-in.
+                Open-source AI analyst for your business data. Connect PostgreSQL,
+                Snowflake, Salesforce, Stripe, and more — define what metrics mean,
+                ask questions in plain English, and get executive insights without
+                vendor lock-in.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
@@ -38,10 +38,10 @@ export function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  to="/chat"
+                  to="/platform"
                   className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
                 >
-                  Open chat
+                  BI Platform
                 </Link>
                 <a
                   href="https://github.com/Salestrics/Buselligence"
@@ -56,8 +56,8 @@ export function LandingPage() {
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
                 {[
-                  ["BYOK", "Your API keys"],
-                  ["MCP", "Live data tools"],
+                  ["Semantic", "Business metrics"],
+                  ["Agents", "Specialized analysts"],
                   ["MIT", "Fully open source"],
                 ].map(([value, label]) => (
                   <div
@@ -91,20 +91,19 @@ export function LandingPage() {
                       You
                     </p>
                     <p className="mt-2 text-sm text-slate-200">
-                      Query last quarter&apos;s NRR by cohort using our Postgres
-                      MCP server.
+                      Why did revenue drop last month?
                     </p>
                   </div>
 
                   <div className="rounded-2xl border border-brand-500/20 bg-brand-500/10 p-4 text-left">
                     <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-brand-200">
                       <MessageSquare className="h-3.5 w-3.5" />
-                      Buselligence
+                      Financial Analyst
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-200">
-                      I called your Postgres MCP tool and found expansion-heavy
-                      cohorts drove NRR to 118%. Want a board-ready summary or
-                      the underlying SQL?
+                      Revenue declined 8.4% due primarily to three enterprise churn
+                      events totaling $142k ARR. Pipeline offset only 35% of losses.
+                      Want the executive summary or drill into churn cohorts?
                     </p>
                   </div>
                 </div>

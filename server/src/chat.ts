@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import {
   SYSTEM_PROMPT,
+  NO_SQL_MODE_PROMPT,
   countMessageTokens,
   createConversationTitle,
   estimateTokens,
@@ -11,6 +12,10 @@ import {
   getAnonymousTokens,
   type ChatMessage,
 } from "./db.js";
+import { getAgent, buildAgentWorkflowPrompt, type AgentId } from "./agents/definitions.js";
+import { buildSemanticContext } from "./semantic/manager.js";
+import { getConnectorSourceNames } from "./connectors/manager.js";
+import { logAudit } from "./governance/audit.js";
 import { listMcpServers, loadMcpTools } from "./mcp/manager.js";
 import {
   getProviderAdapter,
@@ -36,6 +41,8 @@ export interface StreamChatOptions {
   userId?: string;
   anonymousSessionId?: string;
   isAuthenticated: boolean;
+  agentId?: AgentId;
+  noSqlMode?: boolean;
 }
 
 export interface StreamChatResult {
@@ -47,6 +54,7 @@ export interface StreamChatResult {
     provider: string | null;
     model: string | null;
     mcpToolCount: number;
+    agentId: string | null;
   }>;
 }
 
@@ -71,6 +79,34 @@ export function checkAnonymousLimit(
   };
 }
 
+function buildSystemPrompt(
+  userId: string | undefined,
+  agentId: AgentId,
+  noSqlMode: boolean,
+  userQuestion: string
+): string {
+  const agent = getAgent(agentId);
+  const parts = [agent.systemPrompt];
+
+  if (userId) {
+    const semantic = buildSemanticContext(userId);
+    if (semantic) parts.push(semantic);
+
+    const connectors = getConnectorSourceNames(userId);
+    if (connectors.length) {
+      parts.push(`## Connected Data Sources\n${connectors.map((c) => `- ${c}`).join("\n")}`);
+    }
+  }
+
+  if (noSqlMode) parts.push(NO_SQL_MODE_PROMPT);
+
+  if (agentId !== "buselligence" && userQuestion) {
+    parts.push(buildAgentWorkflowPrompt(agent, userQuestion));
+  }
+
+  return parts.join("\n\n");
+}
+
 async function buildMockStream(reply: string): Promise<StreamChatResult> {
   async function* mockStream(): AsyncGenerator<ChatStreamEvent> {
     const words = reply.split(" ");
@@ -89,6 +125,7 @@ async function buildMockStream(reply: string): Promise<StreamChatResult> {
       provider: null,
       model: null,
       mcpToolCount: 0,
+      agentId: null,
     }),
   };
 }
@@ -97,10 +134,13 @@ export async function createChatStream(
   options: StreamChatOptions
 ): Promise<StreamChatResult> {
   const credentials = resolveCredentials(options.userId);
+  const agentId = options.agentId ?? "buselligence";
+  const noSqlMode = options.noSqlMode ?? false;
+  const lastUserMessage = [...options.messages].reverse().find((m) => m.role === "user")?.content ?? "";
 
   if (!credentials) {
     const mockReply =
-      "Buselligence is a bring-your-own-API BI chatbot. Sign in, open Settings, and add your OpenAI, Anthropic, or Google API key to start chatting. You can also connect MCP servers to query live data sources.";
+      "Buselligence is your self-hosted AI analyst. Sign in, define your semantic layer, connect data sources, and add your API key to start analyzing business data.";
 
     const result = await buildMockStream(mockReply);
     const originalGetUsage = result.getUsage;
@@ -117,8 +157,10 @@ export async function createChatStream(
     };
   }
 
+  const systemContent = buildSystemPrompt(options.userId, agentId, noSqlMode, lastUserMessage);
+
   const fullMessages: ChatMessage[] = [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: systemContent },
     ...options.messages,
   ];
 
@@ -133,6 +175,21 @@ export async function createChatStream(
   const mcpServers = options.userId ? listMcpServers(options.userId) : [];
   const { tools, executeTool } = await loadMcpTools(mcpServers);
 
+  const dataSources = options.userId
+    ? [...getConnectorSourceNames(options.userId), ...mcpServers.filter((s) => s.enabled).map((s) => `mcp:${s.name}`)]
+    : [];
+
+  if (options.userId) {
+    logAudit(options.userId, {
+      action: "ai_query",
+      resourceType: "chat",
+      resourceName: lastUserMessage.slice(0, 100),
+      dataSources,
+      agentId,
+      metadata: { noSqlMode, mcpToolCount: tools.length },
+    });
+  }
+
   let completionText = "";
 
   async function* eventStream(): AsyncGenerator<ChatStreamEvent> {
@@ -140,7 +197,19 @@ export async function createChatStream(
       messages: fullMessages,
       credentials: providerCredentials,
       tools,
-      executeTool,
+      executeTool: async (call) => {
+        if (options.userId) {
+          logAudit(options.userId, {
+            action: "tool_call",
+            resourceType: "mcp_tool",
+            resourceName: call.name,
+            dataSources: [call.name],
+            agentId,
+            metadata: { arguments: call.arguments },
+          });
+        }
+        return executeTool(call);
+      },
     })) {
       if (event.type === "delta" && event.content) {
         completionText += event.content;
@@ -162,11 +231,22 @@ export async function createChatStream(
         addAnonymousTokens(options.anonymousSessionId, usage.totalTokens);
       }
 
+      if (options.userId) {
+        logAudit(options.userId, {
+          action: "ai_response",
+          resourceType: "chat",
+          dataSources,
+          agentId,
+          metadata: { tokens: usage.totalTokens },
+        });
+      }
+
       return {
         ...usage,
         provider: providerCredentials.provider,
         model: providerCredentials.model ?? null,
         mcpToolCount: tools.length,
+        agentId,
       };
     },
   };

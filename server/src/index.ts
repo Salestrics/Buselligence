@@ -4,6 +4,7 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { auth, authHandler } from "./auth.js";
+import type { AgentId } from "./agents/definitions.js";
 import {
   checkAnonymousLimit,
   createChatStream,
@@ -85,6 +86,8 @@ import type {
   SearchProviderId,
 } from "./outbound/types.js";
 import "./outbound/schema.js";
+import { registerBiRoutes } from "./bi/routes.js";
+import "./bi/schema.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -105,17 +108,27 @@ async function getSession(req: express.Request) {
   return auth.api.getSession({ headers: req.headers as HeadersInit });
 }
 
+registerBiRoutes(app, getSession);
+
 app.get("/api/health", (_req, res) => {
   const hasServerKey = Boolean(process.env.OPENAI_API_KEY);
   res.json({
     ok: true,
     name: "Buselligence",
-    version: "3.0.0",
+    version: "4.0.0",
     license: "MIT",
     features: {
       byok: true,
       mcp: true,
       outbound: true,
+      semanticLayer: true,
+      dataConnectors: true,
+      analystAgents: true,
+      dashboards: true,
+      governance: true,
+      marketplace: true,
+      scheduledIntelligence: true,
+      envelopeEncryption: true,
       contactManagement: true,
       providers: listProviders().map((provider) => provider.id),
       searchProviders: listSearchProviders().map((provider) => provider.id),
@@ -645,6 +658,8 @@ app.post("/api/chat", async (req, res) => {
       userId,
       anonymousSessionId,
       isAuthenticated,
+      agentId: (req.body?.agentId as AgentId | undefined) ?? "buselligence",
+      noSqlMode: Boolean(req.body?.noSqlMode),
     };
 
     const { stream, getUsage } = await createChatStream(chatOptions);

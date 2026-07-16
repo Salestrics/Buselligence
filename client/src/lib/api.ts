@@ -211,13 +211,18 @@ export async function streamChat(
       model?: string | null;
     }) => void;
     onError: (message: string) => void;
-  }
+  },
+  options?: { agentId?: string; noSqlMode?: boolean }
 ): Promise<void> {
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: getHeaders(anonymousSessionId),
     credentials: "include",
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({
+      messages,
+      agentId: options?.agentId,
+      noSqlMode: options?.noSqlMode,
+    }),
   });
 
   if (res.status === 402 || res.status === 401 || res.status === 400) {

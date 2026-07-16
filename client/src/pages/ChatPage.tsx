@@ -33,6 +33,7 @@ import {
   FREE_TOKEN_LIMIT,
   getAnonymousSessionId,
 } from "../lib/utils";
+import { biApi, type AnalystAgent } from "../lib/bi-api";
 
 function createMessage(
   role: "user" | "assistant",
@@ -97,6 +98,9 @@ export function ChatPage() {
     string | null
   >(null);
   const [saving, setSaving] = useState(false);
+  const [agents, setAgents] = useState<AnalystAgent[]>([]);
+  const [agentId, setAgentId] = useState("buselligence");
+  const [noSqlMode, setNoSqlMode] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
   const anonymousSessionId = getAnonymousSessionId();
   const isAuthenticated = Boolean(session?.user);
@@ -123,6 +127,7 @@ export function ChatPage() {
   useEffect(() => {
     if (!isAuthenticated) return;
     listConversations().then(setConversations);
+    biApi.listAgents().then(setAgents);
   }, [isAuthenticated]);
 
   async function handleSend() {
@@ -194,7 +199,8 @@ export function ChatPage() {
           if (!isAuthenticated) setRequiresSignIn(true);
           setLoading(false);
         },
-      }
+      },
+      { agentId, noSqlMode }
     );
   }
 
@@ -319,10 +325,33 @@ export function ChatPage() {
                   </h1>
                 </div>
                 <p className="mt-1 text-xs text-slate-500">
-                  {provider && model
-                    ? `${provider} · ${model}`
-                    : "Open-source BI copilot · BYOK + MCP"}
+                  {agents.find((a) => a.id === agentId)?.name ?? "Buselligence"}
+                  {provider && model ? ` · ${provider} · ${model}` : ""}
+                  {noSqlMode ? " · No-SQL mode" : ""}
                 </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {isAuthenticated && agents.length > 0 && (
+                  <select
+                    value={agentId}
+                    onChange={(e) => setAgentId(e.target.value)}
+                    className="rounded-lg border border-white/10 bg-[#0b1020] px-2 py-1.5 text-xs text-white"
+                  >
+                    {agents.map((a) => (
+                      <option key={a.id} value={a.id}>{a.title}</option>
+                    ))}
+                  </select>
+                )}
+                <label className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-2 py-1.5 text-xs text-slate-400">
+                  <input
+                    type="checkbox"
+                    checked={noSqlMode}
+                    onChange={(e) => setNoSqlMode(e.target.checked)}
+                    className="accent-brand-500"
+                  />
+                  No SQL
+                </label>
               </div>
 
               <div className="flex items-center gap-3">

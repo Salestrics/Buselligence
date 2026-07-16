@@ -1,28 +1,36 @@
 # Buselligence
 
-Open-source business intelligence chatbot with **bring-your-own-API** (BYOK), **MCP integrations**, and **AI Outbound** lead discovery.
+**The self-hosted AI analyst that understands your business.**
+
+Open-source AI analyst for your business data. Connect your systems, define what metrics mean, ask questions in plain English, and get executive insights — without vendor lock-in.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Buselligence is an MIT-licensed BI copilot you self-host. Use your own OpenAI, Anthropic, or Google API keys, connect MCP servers for live data access, **crawl the web for business leads**, and manage contacts — without platform lock-in.
-
 ## Why Buselligence
 
-- **Freedom of AI usage** — You pay your provider directly. No token markup, no vendor lock-in.
-- **Bring your own API** — Per-user encrypted API keys for OpenAI, Anthropic, and Google.
-- **MCP integrations** — Connect stdio, SSE, or HTTP MCP servers to query warehouses, files, and custom tools during chat.
-- **AI Outbound** — Web lead discovery with Tavily, Serper, or Brave + AI qualification and contact management.
+- **Semantic layer** — Define Revenue, NRR, CAC, Churn, relationships, and business rules so the AI knows what your business means.
+- **Analyst agents** — Data, Financial, Sales, Marketing, Operations, and Executive Assistant — each with specialized workflows.
+- **First-class connectors** — PostgreSQL, Snowflake, BigQuery, Salesforce, Stripe, HubSpot, and more. MCP is the extension layer.
+- **No SQL required** — Ask "Why did revenue drop?" and get queries, charts, explanations, and recommendations.
+- **Dashboard generation** — "Build me a SaaS executive dashboard" → React, PDF, slides, or iframe export.
+- **Data governance** — Audit log of who accessed what, which sources were queried, and rows returned.
+- **Freedom of AI usage** — BYOK for OpenAI, Anthropic, Google. You pay your provider directly.
 - **Open source MIT** — Fork, self-host, and extend freely.
 
-## Features
+## Features (v4)
 
-- Multi-provider AI chat (OpenAI, Anthropic, Google)
-- MCP client with tool calling during conversations
-- AI Outbound: web lead discovery, campaigns, contacts, companies, activity timeline
-- Encrypted API key storage (AES-256-GCM)
-- Saved conversations for authenticated users
-- Optional anonymous demo mode when `OPENAI_API_KEY` is configured
-- React + Express + SQLite stack
+| Area | Capabilities |
+|------|--------------|
+| **Semantic Layer** | Metrics, formulas, entity relationships, business rules, "Explain this metric" |
+| **Data Connectors** | PostgreSQL, MySQL, Snowflake, BigQuery, Redshift, Salesforce, HubSpot, Stripe, QuickBooks, Shopify, GA, Zendesk |
+| **Analyst Agents** | Data, Financial, Sales, Marketing, Operations, Executive Assistant |
+| **Dashboards** | AI-generated executive dashboards with multi-format export |
+| **Governance** | Audit logs for data access, queries, and AI responses |
+| **Marketplace** | One-click MCP installs (Postgres, Stripe, Salesforce, Snowflake, GitHub, Jira) |
+| **Scheduled Intelligence** | Weekly revenue briefings, pipeline updates, risk alerts |
+| **Envelope Encryption** | AES-256-GCM + KMS/Vault envelope encryption for API keys |
+| **AI Outbound** | Web lead discovery with contact management |
+| **MCP** | stdio, SSE, HTTP transports with tool calling during chat |
 
 ## Quick start
 
@@ -42,9 +50,10 @@ npm run dev
 
 1. Open http://localhost:5173/sign-up and create an account
 2. Go to **Settings** and add your API key (OpenAI, Anthropic, or Google)
-3. Optionally add MCP servers (Postgres, filesystem, custom tools)
-4. Open **AI Outbound** to configure search API and run lead discovery campaigns
-5. Start chatting at http://localhost:5173/chat
+3. Open **BI Platform** (`/platform`) → seed the semantic layer and add connectors
+4. Install MCP servers from the Marketplace or configure custom ones in Settings
+5. Chat with an analyst agent — enable **No SQL** mode for executive-friendly answers
+6. Optionally use **AI Outbound** for web lead discovery
 
 ### Demo user (optional)
 
@@ -62,22 +71,21 @@ Default credentials:
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `BETTER_AUTH_SECRET` | Yes | Secret for BetterAuth sessions |
-| `ENCRYPTION_KEY` | Recommended | Encrypts user API keys at rest (falls back to `BETTER_AUTH_SECRET`) |
+| `ENCRYPTION_KEY` | Recommended | Encrypts user API keys at rest |
+| `KMS_PROVIDER` | No | `local` (default), `aws`, `vault`, or `gcp` for envelope encryption |
 | `BETTER_AUTH_URL` | No | Server URL (default `http://localhost:3001`) |
 | `CLIENT_URL` | No | Frontend URL for CORS (default `http://localhost:5173`) |
 | `OPENAI_API_KEY` | No | Optional server default key for anonymous demo mode |
-| `OPENAI_MODEL` | No | Model for demo mode (default `gpt-4o-mini`) |
 | `DISABLE_SIGN_UP` | No | Set `true` to disable self-serve sign-up |
 | `PORT` | No | API port (default `3001`) |
-| `SEED_USER_EMAIL` | No | Demo user email for `db:seed` |
-| `SEED_USER_PASSWORD` | No | Demo user password for `db:seed` |
 
-See [docs/BYOK.md](docs/BYOK.md) and [docs/MCP.md](docs/MCP.md) for detailed configuration.
+See [docs/BYOK.md](docs/BYOK.md), [docs/MCP.md](docs/MCP.md), and [docs/SEMANTIC_LAYER.md](docs/SEMANTIC_LAYER.md) for detailed configuration.
 
 ## Documentation
 
 | Doc | Description |
 |-----|-------------|
+| [docs/SEMANTIC_LAYER.md](docs/SEMANTIC_LAYER.md) | Metrics, relationships, business rules |
 | [docs/BYOK.md](docs/BYOK.md) | Bring your own API — providers, keys, security |
 | [docs/MCP.md](docs/MCP.md) | MCP server setup and examples |
 | [docs/OUTBOUND.md](docs/OUTBOUND.md) | AI Outbound lead discovery & contact management |
@@ -88,12 +96,15 @@ See [docs/BYOK.md](docs/BYOK.md) and [docs/MCP.md](docs/MCP.md) for detailed con
 
 | Endpoint | Auth | Description |
 |----------|------|-------------|
-| `GET /api/health` | — | Health and feature flags |
-| `GET /api/providers` | — | Supported AI providers |
-| `GET/PUT /api/settings` | Yes | User AI provider settings |
-| `GET/POST/PUT/DELETE /api/mcp/servers` | Yes | MCP server management |
-| `POST /api/mcp/servers/:id/test` | Yes | Test MCP connection |
-| `POST /api/chat` | Optional | SSE chat stream with tool events |
+| `GET /api/health` | — | Health and v4 feature flags |
+| `GET /api/agents` | — | Analyst agent definitions |
+| `GET/POST /api/semantic/*` | Yes | Semantic layer (metrics, rules, relationships) |
+| `GET/POST /api/connectors/*` | Yes | Data connector management |
+| `GET/POST /api/dashboards/*` | Yes | Dashboard generation and export |
+| `GET /api/governance/audit` | Yes | Audit log |
+| `GET/POST /api/marketplace/*` | Yes | MCP marketplace installs |
+| `GET/POST /api/intelligence/*` | Yes | Scheduled jobs and briefings |
+| `POST /api/chat` | Optional | SSE chat with `agentId` and `noSqlMode` |
 | `GET/POST/DELETE /api/conversations` | Yes | Saved conversations |
 
 ## Production
@@ -103,7 +114,7 @@ npm run build
 NODE_ENV=production npm start
 ```
 
-Set strong values for `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY` in production. User API keys are encrypted at rest but the encryption key must be protected.
+Set strong values for `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY` in production. Consider `KMS_PROVIDER=aws` or `vault` for envelope encryption.
 
 ## License
 
