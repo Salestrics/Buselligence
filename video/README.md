@@ -22,7 +22,7 @@ bash scripts/render.sh       # full pipeline: audio + render
 Visual-only (no audio re-generation):
 
 ```bash
-npx remotion render src/index.ts LaunchTrailer output/buselligence-launch-trailer.mp4
+npx remotion render src/index.tsx LaunchTrailer output/buselligence-launch-trailer.mp4
 ```
 
 ## Dependencies
@@ -31,7 +31,7 @@ npx remotion render src/index.ts LaunchTrailer output/buselligence-launch-traile
 |------|---------|
 | Node.js 20+ | Remotion |
 | FFmpeg | Music synthesis, audio processing, final mux |
-| Python 3.10+ | Kokoro TTS, Whisper subtitles |
+| Python 3.10+ | Kokoro TTS voiceover |
 | espeak-ng | TTS fallback if Kokoro unavailable |
 
 Install system deps (Ubuntu/Debian):
@@ -43,15 +43,14 @@ sudo apt-get install -y ffmpeg espeak-ng
 Python packages (installed automatically by scripts):
 
 ```bash
-pip install kokoro-onnx soundfile numpy openai-whisper
+pip install kokoro-onnx soundfile numpy
 ```
 
 ## Pipeline
 
-1. `scripts/generate-voiceover.py` — Kokoro TTS (preferred) or espeak-ng
-2. `scripts/generate-music.sh` — FFmpeg ambient score
-3. `scripts/generate-subtitles.py` — Whisper transcription → burned-in captions
-4. `npx remotion render` — 1920×1080 @ 60fps
+1. `scripts/generate-voiceover.py` — Kokoro TTS (preferred) or espeak-ng, fitted to 43s
+2. `scripts/generate-music.sh` — FFmpeg ambient score (45s)
+3. `npx remotion render` — 1920×1080 @ 60fps, no burned-in captions
 
 ## Asset locations
 
@@ -59,7 +58,6 @@ pip install kokoro-onnx soundfile numpy openai-whisper
 |-------|------|
 | Logo | `public/logo.png` |
 | Voiceover script | `scripts/voiceover.txt` |
-| Subtitles | `public/subtitles.json` |
 | Audio (generated) | `public/audio/voiceover.wav`, `public/audio/music.wav` |
 | Final MP4 | `output/buselligence-launch-trailer.mp4` |
 

@@ -2,6 +2,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+TARGET=45
 
 echo "==> Installing Python audio deps"
 python3 -m pip install -q --upgrade pip 2>/dev/null || true
@@ -13,15 +14,14 @@ python3 scripts/generate-voiceover.py
 echo "==> Generating music"
 bash scripts/generate-music.sh
 
-echo "==> Generating subtitles"
-python3 scripts/generate-subtitles.py
-
 mkdir -p public/audio
-cp audio/voiceover.wav public/audio/
-cp audio/music.wav public/audio/
+cp audio/voiceover.wav public/audio/voiceover.wav
+cp audio/music.wav public/audio/music.wav
 
-# Normalize voiceover to 45 seconds
-ffmpeg -y -i public/audio/voiceover.wav -af "apad=pad_dur=45,atrim=0:45" -ar 48000 -ac 2 public/audio/voiceover.wav 2>/dev/null || true
-ffmpeg -y -i public/audio/music.wav -af "atrim=0:45" -ar 48000 -ac 2 public/audio/music.wav 2>/dev/null || true
+# Trim music to exact video length
+ffmpeg -y -i public/audio/music.wav -af "atrim=0:${TARGET}" -ar 48000 -ac 2 public/audio/music-trim.wav 2>/dev/null
+mv public/audio/music-trim.wav public/audio/music.wav
 
-echo "✓ Audio pipeline complete"
+VO_DUR=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 public/audio/voiceover.wav || echo "?")
+echo "✓ Voiceover duration: ${VO_DUR}s (video: ${TARGET}s)"
+echo "✓ Audio pipeline complete (no subtitles)"

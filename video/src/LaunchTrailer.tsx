@@ -7,7 +7,6 @@ import { Scene4WowMoment } from "./scenes/Scene4WowMoment";
 import { Scene5Ecosystem } from "./scenes/Scene5Ecosystem";
 import { Scene6OpenSource } from "./scenes/Scene6OpenSource";
 import { Scene7CTA } from "./scenes/Scene7CTA";
-import { Subtitles } from "./components/Subtitles";
 
 const sec = (s: number) => Math.round(s * FPS);
 
@@ -38,8 +37,6 @@ export const LaunchTrailer = () => {
       <Sequence from={sec(SCENES.scene7.start)} durationInFrames={sec(SCENES.scene7.end - SCENES.scene7.start)}>
         <Scene7CTA />
       </Sequence>
-
-      <Subtitles />
     </>
   );
 };

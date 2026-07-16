@@ -9,7 +9,6 @@
     "render:visual": "remotion render src/index.tsx LaunchTrailer output/visual.mp4",
     "render:final": "bash scripts/render.sh",
     "generate:audio": "bash scripts/generate-audio.sh",
-    "generate:subs": "python3 scripts/generate-subtitles.py"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.286",
