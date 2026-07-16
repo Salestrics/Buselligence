@@ -36,6 +36,55 @@ import {
   saveUserSettings,
 } from "./settings.js";
 import type { AIProviderId } from "./providers/index.js";
+import {
+  createCampaign,
+  deleteCampaign,
+  getCampaign,
+  listCampaigns,
+  updateCampaign,
+} from "./outbound/campaigns.js";
+import {
+  createActivity,
+  deleteActivity,
+  listActivities,
+} from "./outbound/activities.js";
+import {
+  convertLeadToContact,
+  createContact,
+  deleteContact,
+  deleteLead,
+  getContact,
+  getLead,
+  getOutboundStats,
+  listContacts,
+  listLeads,
+  updateContact,
+  updateLeadStatus,
+} from "./outbound/contacts.js";
+import {
+  createCompany,
+  deleteCompany,
+  getCompany,
+  listCompanies,
+  updateCompany,
+} from "./outbound/companies.js";
+import { runOutboundCampaign } from "./outbound/runner.js";
+import {
+  getPublicOutboundSettings,
+  listSearchProviders,
+  saveOutboundSettings,
+} from "./outbound/settings.js";
+import { testSearchConnection } from "./outbound/search.js";
+import type {
+  OutboundCampaignInput,
+  OutboundCompanyInput,
+  OutboundContactInput,
+  ActivityType,
+  ContactStage,
+  LeadStatus,
+  SearchProviderId,
+} from "./outbound/types.js";
+import "./outbound/schema.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -61,12 +110,15 @@ app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
     name: "Buselligence",
-    version: "2.0.0",
+    version: "3.0.0",
     license: "MIT",
     features: {
       byok: true,
       mcp: true,
+      outbound: true,
+      contactManagement: true,
       providers: listProviders().map((provider) => provider.id),
+      searchProviders: listSearchProviders().map((provider) => provider.id),
       serverDefaultKey: hasServerKey,
     },
   });
@@ -195,6 +247,310 @@ app.post("/api/mcp/servers/:id/test", async (req, res) => {
 
   const result = await testMcpServer(server);
   res.json(result);
+});
+
+// --- AI Outbound: lead discovery & contact management ---
+
+app.get("/api/outbound/stats", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+  res.json({ stats: getOutboundStats(session.user.id) });
+});
+
+app.get("/api/outbound/search-providers", (_req, res) => {
+  res.json({ providers: listSearchProviders() });
+});
+
+app.get("/api/outbound/settings", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+  res.json({ settings: getPublicOutboundSettings(session.user.id) });
+});
+
+app.put("/api/outbound/settings", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const searchProvider = req.body?.searchProvider as SearchProviderId | undefined;
+  if (!searchProvider) return res.status(400).json({ error: "searchProvider is required" });
+
+  try {
+    const settings = saveOutboundSettings(session.user.id, {
+      searchProvider,
+      searchApiKey:
+        req.body?.searchApiKey === null
+          ? null
+          : typeof req.body?.searchApiKey === "string"
+            ? req.body.searchApiKey
+            : undefined,
+    });
+    res.json({ settings });
+  } catch (error) {
+    res.status(400).json({
+      error: error instanceof Error ? error.message : "Failed to save outbound settings",
+    });
+  }
+});
+
+app.post("/api/outbound/settings/test", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const settings = getPublicOutboundSettings(session.user.id);
+  if (!settings.hasSearchApiKey) {
+    return res.status(400).json({ error: "No search API key configured" });
+  }
+
+  const { resolveSearchCredentials } = await import("./outbound/settings.js");
+  const creds = resolveSearchCredentials(session.user.id);
+  if (!creds) return res.status(400).json({ error: "Search credentials not found" });
+
+  const result = await testSearchConnection(creds.provider, creds.apiKey);
+  res.json(result);
+});
+
+app.get("/api/outbound/campaigns", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+  res.json({ campaigns: listCampaigns(session.user.id) });
+});
+
+app.post("/api/outbound/campaigns", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const input = req.body as OutboundCampaignInput;
+  if (!input?.name) return res.status(400).json({ error: "Campaign name is required" });
+
+  const campaign = createCampaign(session.user.id, input);
+  res.status(201).json({ campaign });
+});
+
+app.get("/api/outbound/campaigns/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const campaign = getCampaign(req.params.id, session.user.id);
+  if (!campaign) return res.status(404).json({ error: "Campaign not found" });
+  res.json({ campaign });
+});
+
+app.put("/api/outbound/campaigns/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const campaign = updateCampaign(req.params.id, session.user.id, req.body as Partial<OutboundCampaignInput>);
+  if (!campaign) return res.status(404).json({ error: "Campaign not found" });
+  res.json({ campaign });
+});
+
+app.delete("/api/outbound/campaigns/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const deleted = deleteCampaign(req.params.id, session.user.id);
+  if (!deleted) return res.status(404).json({ error: "Campaign not found" });
+  res.json({ ok: true });
+});
+
+app.post("/api/outbound/campaigns/:id/run", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const result = await runOutboundCampaign(req.params.id, session.user.id);
+  res.json(result);
+});
+
+app.get("/api/outbound/leads", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const leads = listLeads(session.user.id, {
+    campaignId: req.query.campaignId as string | undefined,
+    status: req.query.status as LeadStatus | undefined,
+  });
+  res.json({ leads });
+});
+
+app.get("/api/outbound/leads/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const lead = getLead(req.params.id, session.user.id);
+  if (!lead) return res.status(404).json({ error: "Lead not found" });
+  res.json({ lead });
+});
+
+app.patch("/api/outbound/leads/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const status = req.body?.status as LeadStatus | undefined;
+  if (!status) return res.status(400).json({ error: "status is required" });
+
+  const lead = updateLeadStatus(req.params.id, session.user.id, status);
+  if (!lead) return res.status(404).json({ error: "Lead not found" });
+  res.json({ lead });
+});
+
+app.delete("/api/outbound/leads/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const deleted = deleteLead(req.params.id, session.user.id);
+  if (!deleted) return res.status(404).json({ error: "Lead not found" });
+  res.json({ ok: true });
+});
+
+app.post("/api/outbound/leads/:id/convert", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const contact = convertLeadToContact(req.params.id, session.user.id);
+  if (!contact) return res.status(404).json({ error: "Lead not found" });
+  res.json({ contact });
+});
+
+app.get("/api/outbound/contacts", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const contacts = listContacts(session.user.id, {
+    companyId: req.query.companyId as string | undefined,
+    stage: req.query.stage as ContactStage | undefined,
+  });
+  res.json({ contacts });
+});
+
+app.post("/api/outbound/contacts", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const input = req.body as OutboundContactInput;
+  if (!input?.firstName) return res.status(400).json({ error: "firstName is required" });
+
+  const contact = createContact(session.user.id, input);
+  res.status(201).json({ contact });
+});
+
+app.get("/api/outbound/contacts/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const contact = getContact(req.params.id, session.user.id);
+  if (!contact) return res.status(404).json({ error: "Contact not found" });
+  res.json({ contact });
+});
+
+app.put("/api/outbound/contacts/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const contact = updateContact(req.params.id, session.user.id, req.body as Partial<OutboundContactInput>);
+  if (!contact) return res.status(404).json({ error: "Contact not found" });
+  res.json({ contact });
+});
+
+app.delete("/api/outbound/contacts/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const deleted = deleteContact(req.params.id, session.user.id);
+  if (!deleted) return res.status(404).json({ error: "Contact not found" });
+  res.json({ ok: true });
+});
+
+app.get("/api/outbound/companies", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+  res.json({ companies: listCompanies(session.user.id) });
+});
+
+app.post("/api/outbound/companies", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const input = req.body as OutboundCompanyInput;
+  if (!input?.name) return res.status(400).json({ error: "Company name is required" });
+
+  const company = createCompany(session.user.id, input);
+  res.status(201).json({ company });
+});
+
+app.get("/api/outbound/companies/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const company = getCompany(req.params.id, session.user.id);
+  if (!company) return res.status(404).json({ error: "Company not found" });
+  res.json({ company });
+});
+
+app.put("/api/outbound/companies/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const company = updateCompany(req.params.id, session.user.id, req.body as Partial<OutboundCompanyInput>);
+  if (!company) return res.status(404).json({ error: "Company not found" });
+  res.json({ company });
+});
+
+app.delete("/api/outbound/companies/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const deleted = deleteCompany(req.params.id, session.user.id);
+  if (!deleted) return res.status(404).json({ error: "Company not found" });
+  res.json({ ok: true });
+});
+
+app.get("/api/outbound/activities", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const activities = listActivities(session.user.id, {
+    contactId: req.query.contactId as string | undefined,
+    companyId: req.query.companyId as string | undefined,
+    leadId: req.query.leadId as string | undefined,
+  });
+  res.json({ activities });
+});
+
+app.post("/api/outbound/activities", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const { contactId, companyId, leadId, type, subject, body, metadata } = req.body as {
+    contactId?: string;
+    companyId?: string;
+    leadId?: string;
+    type: ActivityType;
+    subject?: string;
+    body: string;
+    metadata?: Record<string, unknown>;
+  };
+
+  if (!type || !body) return res.status(400).json({ error: "type and body are required" });
+
+  const activity = createActivity(session.user.id, {
+    contactId,
+    companyId,
+    leadId,
+    type,
+    subject,
+    body,
+    metadata,
+  });
+  res.status(201).json({ activity });
+});
+
+app.delete("/api/outbound/activities/:id", async (req, res) => {
+  const session = await getSession(req);
+  if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+  const deleted = deleteActivity(req.params.id, session.user.id);
+  if (!deleted) return res.status(404).json({ error: "Activity not found" });
+  res.json({ ok: true });
 });
 
 app.get("/api/usage", async (req, res) => {

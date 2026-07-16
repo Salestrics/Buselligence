@@ -1,4 +1,4 @@
-import { BarChart3, Brain, KeyRound, LineChart, Plug, Shield } from "lucide-react";
+import { BarChart3, Brain, KeyRound, LineChart, Plug, Radar, Shield } from "lucide-react";
 
 const features = [
   {
@@ -12,6 +12,12 @@ const features = [
     title: "MCP integrations",
     description:
       "Connect Model Context Protocol servers to query warehouses, files, APIs, and custom tools during chat.",
+  },
+  {
+    icon: Radar,
+    title: "AI Outbound lead discovery",
+    description:
+      "Crawl the web with Tavily, Serper, or Brave to find business leads matching your ICP — qualified by AI.",
   },
   {
     icon: Brain,

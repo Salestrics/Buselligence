@@ -1,22 +1,24 @@
 # Buselligence
 
-Open-source business intelligence chatbot with **bring-your-own-API** (BYOK) and **Model Context Protocol (MCP)** support.
+Open-source business intelligence chatbot with **bring-your-own-API** (BYOK), **MCP integrations**, and **AI Outbound** lead discovery.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Buselligence is an MIT-licensed BI copilot you self-host. Use your own OpenAI, Anthropic, or Google API keys, connect MCP servers for live data access, and chat about KPIs, SQL, forecasting, and executive narratives — without platform lock-in.
+Buselligence is an MIT-licensed BI copilot you self-host. Use your own OpenAI, Anthropic, or Google API keys, connect MCP servers for live data access, **crawl the web for business leads**, and manage contacts — without platform lock-in.
 
 ## Why Buselligence
 
 - **Freedom of AI usage** — You pay your provider directly. No token markup, no vendor lock-in.
 - **Bring your own API** — Per-user encrypted API keys for OpenAI, Anthropic, and Google.
 - **MCP integrations** — Connect stdio, SSE, or HTTP MCP servers to query warehouses, files, and custom tools during chat.
+- **AI Outbound** — Web lead discovery with Tavily, Serper, or Brave + AI qualification and contact management.
 - **Open source MIT** — Fork, self-host, and extend freely.
 
 ## Features
 
 - Multi-provider AI chat (OpenAI, Anthropic, Google)
 - MCP client with tool calling during conversations
+- AI Outbound: web lead discovery, campaigns, contacts, companies, activity timeline
 - Encrypted API key storage (AES-256-GCM)
 - Saved conversations for authenticated users
 - Optional anonymous demo mode when `OPENAI_API_KEY` is configured
@@ -41,7 +43,8 @@ npm run dev
 1. Open http://localhost:5173/sign-up and create an account
 2. Go to **Settings** and add your API key (OpenAI, Anthropic, or Google)
 3. Optionally add MCP servers (Postgres, filesystem, custom tools)
-4. Start chatting at http://localhost:5173/chat
+4. Open **AI Outbound** to configure search API and run lead discovery campaigns
+5. Start chatting at http://localhost:5173/chat
 
 ### Demo user (optional)
 
@@ -77,6 +80,7 @@ See [docs/BYOK.md](docs/BYOK.md) and [docs/MCP.md](docs/MCP.md) for detailed con
 |-----|-------------|
 | [docs/BYOK.md](docs/BYOK.md) | Bring your own API — providers, keys, security |
 | [docs/MCP.md](docs/MCP.md) | MCP server setup and examples |
+| [docs/OUTBOUND.md](docs/OUTBOUND.md) | AI Outbound lead discovery & contact management |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design and data flow |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 
