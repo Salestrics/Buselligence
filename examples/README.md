@@ -53,7 +53,7 @@ Each project should include a `buselligence.lock` file for reproducible AI envir
 ```json
 {
   "version": "1.0.0",
-  "models": { "default": "gpt-4o-mini", "reasoning": "gpt-4o" },
+  "models": { "default": "gpt-5.6-sol", "reasoning": "gpt-5.6-terra" },
   "agents": { "software_engineer": "1.0.0" },
   "skills": { "build-react-app": "1.0.0" },
   "mcpServers": ["filesystem"],

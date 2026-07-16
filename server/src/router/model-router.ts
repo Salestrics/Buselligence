@@ -1,4 +1,5 @@
 import type { ModelRouteDecision } from "../studio/types.js";
+import { OPENAI_MODELS } from "../providers/openai-models.js";
 
 export type TaskType =
   | "simple_question"
@@ -12,14 +13,14 @@ const ROUTING_TABLE: Record<TaskType, ModelRouteDecision> = {
   simple_question: {
     task: "simple_question",
     provider: "openai",
-    model: "gpt-4o-mini",
+    model: OPENAI_MODELS.sol,
     reason: "Fast, cost-effective for straightforward Q&A",
   },
   complex_analysis: {
     task: "complex_analysis",
     provider: "openai",
-    model: "gpt-4o",
-    reason: "Deep reasoning for financial and strategic analysis",
+    model: OPENAI_MODELS.luna,
+    reason: "Balanced reasoning for financial and strategic analysis",
   },
   code_generation: {
     task: "code_generation",
@@ -30,13 +31,13 @@ const ROUTING_TABLE: Record<TaskType, ModelRouteDecision> = {
   data_reasoning: {
     task: "data_reasoning",
     provider: "openai",
-    model: "gpt-4o",
-    reason: "Specialized agent for SQL, metrics, and data lineage",
+    model: OPENAI_MODELS.terra,
+    reason: "Deep reasoning for SQL, metrics, and data lineage",
   },
   documentation: {
     task: "documentation",
     provider: "openai",
-    model: "gpt-4o-mini",
+    model: OPENAI_MODELS.sol,
     reason: "Efficient for docs, README, and release notes",
   },
   code_review: {
@@ -89,7 +90,11 @@ export function getRouterConfig(): RouterConfig {
   return {
     enabled: true,
     providers: [
-      { id: "openai", name: "OpenAI", models: ["gpt-4o", "gpt-4o-mini", "o1"] },
+      {
+        id: "openai",
+        name: "OpenAI",
+        models: [OPENAI_MODELS.sol, OPENAI_MODELS.luna, OPENAI_MODELS.terra],
+      },
       {
         id: "anthropic",
         name: "Anthropic",

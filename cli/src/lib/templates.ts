@@ -64,7 +64,7 @@ bus evaluate ${slug} "Complete a sample task"
           version: "1.0.0",
           agents: { [slug]: "1.0.0" },
           skills: { "teach-concept": "1.0.0" },
-          models: { default: "gpt-4o-mini" },
+          models: { default: "gpt-5.6-sol" },
           dependencies: { buselligence: "8.0.0", kernel: "1.0.0" },
         },
         null,
@@ -126,7 +126,7 @@ export function generateAiApp(name: string, baseDir: string, type = "crm"): void
       content: JSON.stringify(
         {
           version: "1.0.0",
-          models: { default: "gpt-4o-mini", reasoning: "gpt-4o" },
+          models: { default: "gpt-5.6-sol", reasoning: "gpt-5.6-terra" },
           agents: { business_analyst: "1.0.0", software_engineer: "1.0.0" },
           skills: { "generate-api": "1.0.0", "analyze-database": "1.0.0", "build-react-app": "1.0.0" },
           mcpServers: [],

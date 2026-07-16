@@ -1,5 +1,6 @@
 import { anthropicProvider } from "./anthropic.js";
 import { googleProvider } from "./google.js";
+import { OPENAI_DEFAULT_MODEL, OPENAI_MODELS } from "./openai-models.js";
 import { openaiProvider } from "./openai.js";
 import type {
   AIProviderAdapter,
@@ -14,12 +15,11 @@ export const PROVIDER_DEFINITIONS: ProviderDefinition[] = [
     name: "OpenAI",
     description:
       "Use GPT models with your own OpenAI API key. Supports tool calling and MCP integrations.",
-    defaultModel: "gpt-4o-mini",
+    defaultModel: OPENAI_DEFAULT_MODEL,
     models: [
-      { id: "gpt-4o-mini", name: "GPT-4o mini", description: "Fast and affordable" },
-      { id: "gpt-4o", name: "GPT-4o", description: "Strong reasoning and tool use" },
-      { id: "gpt-4.1-mini", name: "GPT-4.1 mini" },
-      { id: "gpt-4.1", name: "GPT-4.1" },
+      { id: OPENAI_MODELS.sol, name: "GPT-5.6 Sol", description: "Fast and cost-effective" },
+      { id: OPENAI_MODELS.luna, name: "GPT-5.6 Luna", description: "Balanced quality and speed" },
+      { id: OPENAI_MODELS.terra, name: "GPT-5.6 Terra", description: "Deep reasoning and tool use" },
     ],
     supportsTools: true,
     docsUrl: "https://platform.openai.com/docs",

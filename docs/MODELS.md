@@ -6,7 +6,7 @@ Buselligence supports multiple AI providers with intelligent routing.
 
 | Provider | Models | Notes |
 |----------|--------|-------|
-| OpenAI | gpt-4o, gpt-4o-mini | Default for general tasks |
+| OpenAI | gpt-5.6-sol, gpt-5.6-luna, gpt-5.6-terra | Sol (fast), Luna (balanced), Terra (deep reasoning) |
 | Anthropic | claude-sonnet-4 | Code and reasoning |
 | Google | gemini-2.0-flash | Fast, cost-effective |
 | Local | llama3.2, custom | Ollama, llama.cpp, vLLM |
@@ -32,7 +32,7 @@ Kernel execution uses `routeModel(action)` automatically.
 
 Track tokens and cost per task at `/kernel` → Costs.
 
-Optimization suggestions: e.g. "Could reduce 42% using gpt-4o-mini for simpler steps."
+Optimization suggestions: e.g. "Could reduce 42% using GPT-5.6 Sol for simpler steps."
 
 ## Local models
 
@@ -52,8 +52,8 @@ Pin model versions for reproducibility:
 ```json
 {
   "models": {
-    "default": "gpt-4o-mini",
-    "reasoning": "gpt-4o",
+    "default": "gpt-5.6-sol",
+    "reasoning": "gpt-5.6-terra",
     "code": "claude-sonnet-4-20250514"
   }
 }

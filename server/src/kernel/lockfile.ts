@@ -15,8 +15,8 @@ export function generateLockfile(userId: string, projectId?: string): Buselligen
   const lock: BuselligenceLock = {
     version: "1.0.0",
     models: {
-      default: "gpt-4o-mini",
-      reasoning: "gpt-4o",
+      default: "gpt-5.6-sol",
+      reasoning: "gpt-5.6-terra",
       code: "claude-sonnet-4-20250514",
     },
     agents: Object.fromEntries(agents.map((a) => [a.slug, a.version])),

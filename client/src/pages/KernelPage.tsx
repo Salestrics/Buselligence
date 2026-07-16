@@ -401,7 +401,7 @@ export function KernelPage() {
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <h3 className="font-medium">Cost optimization</h3>
               <p className="mt-2 text-sm text-slate-400">
-                Could reduce ~42% using gpt-4o-mini for non-reasoning steps. Relevant for BYOK users tracking spend per task.
+                Could reduce ~42% using GPT-5.6 Sol for non-reasoning steps. Relevant for BYOK users tracking spend per task.
               </p>
             </div>
           </div>

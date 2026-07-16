@@ -117,7 +117,7 @@ User Request → Agent Planner → Tool Calls → Model Responses → Final Outp
 
 ## Cost Intelligence
 
-Track tokens, models, cost per task. Optimization suggestions for BYOK users (e.g., "Could reduce 42% using gpt-4o-mini").
+Track tokens, models, cost per task. Optimization suggestions for BYOK users (e.g., "Could reduce 42% using GPT-5.6 Sol").
 
 ## buselligence.lock
 
@@ -126,7 +126,7 @@ Reproducible AI environments:
 ```json
 {
   "version": "1.0.0",
-  "models": { "default": "gpt-4o-mini", "reasoning": "gpt-4o" },
+  "models": { "default": "gpt-5.6-sol", "reasoning": "gpt-5.6-terra" },
   "agents": { "security_reviewer": "1.2.0" },
   "skills": { "build-react-app": "1.0.0" },
   "mcpServers": ["filesystem"],

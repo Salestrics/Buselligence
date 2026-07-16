@@ -31,6 +31,7 @@ import {
   type McpServerInput,
 } from "./mcp/manager.js";
 import { listProviders } from "./providers/index.js";
+import { OPENAI_DEFAULT_MODEL } from "./providers/openai-models.js";
 import {
   getPublicSettings,
   resolveCredentials,
@@ -688,7 +689,7 @@ app.get("/api/usage", async (req, res) => {
     hasApiKey: serverDemoKeyEnabled(),
     apiKeySource: serverDemoKeyEnabled() ? "server" : null,
     provider: serverDemoKeyEnabled() ? "openai" : null,
-    model: serverDemoKeyEnabled() ? process.env.OPENAI_MODEL ?? "gpt-4o-mini" : null,
+    model: serverDemoKeyEnabled() ? process.env.OPENAI_MODEL ?? OPENAI_DEFAULT_MODEL : null,
   });
 });
 

@@ -68,7 +68,7 @@ export function getDefaultPromptWorkspace(userId: string): PromptWorkspace[] {
     createPrompt(userId, {
       name: "Model Settings",
       promptType: "model",
-      content: JSON.stringify({ default: "gpt-4o-mini", reasoning: "gpt-4o", code: "claude-sonnet-4-20250514" }, null, 2),
+      content: JSON.stringify({ default: "gpt-5.6-sol", reasoning: "gpt-5.6-terra", code: "claude-sonnet-4-20250514" }, null, 2),
       metadata: { temperature: 0.7, maxTokens: 4096 },
     }),
   ];

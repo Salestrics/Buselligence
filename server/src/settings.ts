@@ -2,6 +2,7 @@ import { decryptSecret, encryptSecret, maskSecret } from "./crypto.js";
 import { db } from "./db.js";
 import type { AIProviderId } from "./providers/index.js";
 import { getProviderDefinition } from "./providers/index.js";
+import { OPENAI_DEFAULT_MODEL } from "./providers/openai-models.js";
 import { assertSafeApiBaseUrl } from "./security/url-policy.js";
 
 export interface UserSettingsRow {
@@ -186,7 +187,7 @@ export function resolveCredentials(
   if (serverKey && !userId) {
     return {
       provider: "openai",
-      model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+      model: process.env.OPENAI_MODEL ?? OPENAI_DEFAULT_MODEL,
       apiKey: serverKey,
       source: "server",
     };

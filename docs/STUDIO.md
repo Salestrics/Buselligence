@@ -78,10 +78,10 @@ Install from `/studio` → Marketplace tab or `GET /api/studio/marketplace`.
 
 | Task | Model |
 |------|-------|
-| Simple questions | GPT-4o-mini |
-| Complex analysis | GPT-4o |
+| Simple questions | GPT-5.6 Sol |
+| Complex analysis | GPT-5.6 Luna |
 | Code generation | Claude Sonnet |
-| Data reasoning | GPT-4o + semantic layer |
+| Data reasoning | GPT-5.6 Terra + semantic layer |
 
 ## API Reference
 

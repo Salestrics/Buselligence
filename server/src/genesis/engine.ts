@@ -85,7 +85,7 @@ function generateFiles(idea: ReturnType<typeof parseIdea>): Array<{ path: string
         project: name,
         agents: { architect: "1.0.0", software_engineer: "1.0.0" },
         skills: { "build-react-app": "1.0.0", "generate-api": "1.0.0", "analyze-database": "1.0.0" },
-        models: { default: "gpt-4o-mini", reasoning: "gpt-4o" },
+        models: { default: "gpt-5.6-sol", reasoning: "gpt-5.6-terra" },
       },
       null,
       2

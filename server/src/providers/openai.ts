@@ -7,6 +7,7 @@ import type {
   ToolCall,
 } from "./types.js";
 import { countMessageTokens, estimateTokens } from "../chat-utils.js";
+import { OPENAI_DEFAULT_MODEL } from "./openai-models.js";
 
 function toOpenAIMessages(
   messages: StreamChatContext["messages"]
@@ -55,7 +56,7 @@ export const openaiProvider: AIProviderAdapter = {
       if (context.signal?.aborted) return;
 
       const stream = await client.chat.completions.create({
-        model: context.credentials.model ?? "gpt-4o-mini",
+        model: context.credentials.model ?? OPENAI_DEFAULT_MODEL,
         messages: conversation,
         tools,
         stream: true,

@@ -6,7 +6,7 @@ Buselligence is designed around **freedom of AI usage**. You choose the provider
 
 | Provider | Default model | API key source |
 |----------|---------------|----------------|
-| OpenAI | `gpt-4o-mini` | [OpenAI Platform](https://platform.openai.com/api-keys) |
+| OpenAI | `gpt-5.6-sol` | [OpenAI Platform](https://platform.openai.com/api-keys) |
 | Anthropic | `claude-sonnet-4-20250514` | [Anthropic Console](https://console.anthropic.com/) |
 | Google AI | `gemini-2.0-flash` | [Google AI Studio](https://aistudio.google.com/apikey) |
 
@@ -37,7 +37,7 @@ For anonymous trials without sign-up, you can set a shared server key:
 
 ```env
 OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-4o-mini
+OPENAI_MODEL=gpt-5.6-sol
 ```
 
 When configured:

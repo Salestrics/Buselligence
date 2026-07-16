@@ -2,8 +2,9 @@ import { randomUUID } from "node:crypto";
 import { db } from "../db.js";
 
 const MODEL_PRICING: Record<string, { input: number; output: number }> = {
-  "gpt-4o": { input: 2.5 / 1_000_000, output: 10 / 1_000_000 },
-  "gpt-4o-mini": { input: 0.15 / 1_000_000, output: 0.6 / 1_000_000 },
+  "gpt-5.6-sol": { input: 0.15 / 1_000_000, output: 0.6 / 1_000_000 },
+  "gpt-5.6-luna": { input: 1.25 / 1_000_000, output: 5 / 1_000_000 },
+  "gpt-5.6-terra": { input: 2.5 / 1_000_000, output: 10 / 1_000_000 },
   "claude-sonnet-4-20250514": { input: 3 / 1_000_000, output: 15 / 1_000_000 },
   "gemini-2.0-flash": { input: 0.1 / 1_000_000, output: 0.4 / 1_000_000 },
   local: { input: 0, output: 0 },
@@ -15,7 +16,7 @@ export function estimateCost(
   tokensIn: number,
   tokensOut: number
 ): number {
-  const pricing = MODEL_PRICING[model] ?? MODEL_PRICING["gpt-4o-mini"]!;
+  const pricing = MODEL_PRICING[model] ?? MODEL_PRICING["gpt-5.6-sol"]!;
   if (provider === "local") return 0;
   return tokensIn * pricing.input + tokensOut * pricing.output;
 }
@@ -29,8 +30,8 @@ export function recordCost(
   costUsd: number
 ): void {
   const optimization =
-    model.includes("4o") && !model.includes("mini")
-      ? `Could reduce ~42% using gpt-4o-mini for simpler steps`
+    model === "gpt-5.6-terra" || model === "gpt-5.6-luna"
+      ? `Could reduce ~42% using GPT-5.6 Sol for simpler steps`
       : undefined;
 
   db.prepare(
@@ -72,7 +73,7 @@ export function getCostSummary(userId: string) {
   };
 }
 
-export function analyzeTaskCost(task: string, model = "gpt-4o"): {
+export function analyzeTaskCost(task: string, model = "gpt-5.6-luna"): {
   task: string;
   estimatedCostUsd: number;
   optimization: string;
@@ -84,8 +85,8 @@ export function analyzeTaskCost(task: string, model = "gpt-4o"): {
     task,
     estimatedCostUsd: Math.round(cost * 100) / 100,
     optimization:
-      model !== "gpt-4o-mini"
-        ? `Could reduce ~42% using gpt-4o-mini for non-reasoning steps`
+      model !== "gpt-5.6-sol"
+        ? `Could reduce ~42% using GPT-5.6 Sol for non-reasoning steps`
         : "Already using cost-optimized model",
   };
 }
