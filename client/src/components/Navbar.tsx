@@ -3,10 +3,10 @@ import { Logo } from "./Logo";
 import { useSession, signOut } from "../lib/auth-client";
 
 const links = [
-  { href: "/#features", label: "Features" },
+  { href: "/#features", label: "Platform" },
+  { href: "/manifesto", label: "Manifesto" },
+  { href: "/workspace", label: "Workspace" },
   { href: "/studio", label: "Studio" },
-  { href: "/platform", label: "BI Platform" },
-  { href: "/outbound", label: "AI Outbound" },
   { href: "/chat", label: "Chat" },
 ];
 
@@ -39,22 +39,16 @@ export function Navbar() {
           {session?.user ? (
             <>
               <Link
+                to="/workspace"
+                className="hidden rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:text-white sm:inline-flex"
+              >
+                Workspace
+              </Link>
+              <Link
                 to="/studio"
                 className="hidden rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:text-white sm:inline-flex"
               >
                 Studio
-              </Link>
-              <Link
-                to="/platform"
-                className="hidden rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:text-white sm:inline-flex"
-              >
-                BI Platform
-              </Link>
-              <Link
-                to="/outbound"
-                className="hidden rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 transition hover:border-white/20 hover:text-white sm:inline-flex"
-              >
-                AI Outbound
               </Link>
               <Link
                 to="/settings"

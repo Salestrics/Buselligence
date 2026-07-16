@@ -420,20 +420,19 @@ export function ChatPage() {
               <div className="flex h-full flex-col items-center justify-center text-center">
                 <Logo size="lg" showGlow />
                 <h2 className="mt-6 text-2xl font-semibold text-white">
-                  What should we analyze?
+                  What can I help you accomplish?
                 </h2>
                 <p className="mt-3 max-w-lg text-sm leading-6 text-slate-400">
-                  Ask about KPIs, SQL, cohort trends, board metrics, or
-                  forecasting. Connect MCP servers in Settings to query live
-                  data sources during chat.
+                  Your AI companion — learn, create, analyze, build, automate, and solve
+                  problems. Pick an agent or just start talking.
                 </p>
 
                 <div className="mt-8 grid gap-3 sm:grid-cols-2">
                   {[
-                    "Draft a KPI tree for a usage-based SaaS",
-                    "Write SQL for monthly net revenue retention",
-                    "Query revenue by region via MCP Postgres",
-                    "Summarize board metrics for a Series B update",
+                    "Explain quantum physics like I'm a beginner",
+                    "Create an inventory system for my small business",
+                    "What should I focus on this week?",
+                    "Build me a website for my bakery",
                   ].map((prompt) => (
                     <button
                       key={prompt}

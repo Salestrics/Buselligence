@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, GitBranch, MessageSquare, Sparkles } from "lucide-react";
 import { Features } from "../components/Features";
 import { Navbar } from "../components/Navbar";
+import { NotThisCategory, Philosophy, PlatformPillars } from "../components/PlatformPillars";
 import { Pricing } from "../components/Pricing";
 
 export function LandingPage() {
@@ -15,17 +16,17 @@ export function LandingPage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-200">
                 <Sparkles className="h-3.5 w-3.5" />
-                Open source · MIT · BYOK
+                AI for Everyone · Owned by Everyone · MIT
               </div>
 
               <h1 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl">
-                The open-source AI workspace where businesses analyze, build, and automate
+                Give every person the power of AI
               </h1>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-400">
-                Buselligence is an open-source AI business operating system. Analyze data,
-                build software, automate workflows, and create custom applications — using
-                your own AI models and infrastructure, without vendor lock-in.
+                Buselligence is the open-source AI empowerment platform — a place where anyone
+                can analyze, create, automate, learn, build, and solve problems with AI. Think
+                operating system, not chatbot.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
@@ -37,27 +38,24 @@ export function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  to="/studio"
+                  to="/workspace"
                   className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
                 >
-                  Open Studio
+                  My Workspace
                 </Link>
-                <a
-                  href="https://github.com/Salestrics/Buselligence"
-                  target="_blank"
-                  rel="noreferrer"
+                <Link
+                  to="/manifesto"
                   className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
                 >
-                  <GitBranch className="h-4 w-4" />
-                  GitHub
-                </a>
+                  Read the Manifesto
+                </Link>
               </div>
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
                 {[
-                  ["Studio", "Build & deploy apps"],
-                  ["Agents", "AI that knows your business"],
-                  ["MIT", "Fully open source"],
+                  ["Learn", "AI that teaches"],
+                  ["Build", "Apps without code"],
+                  ["Own", "Your data, your AI"],
                 ].map(([value, label]) => (
                   <div
                     key={label}
@@ -79,30 +77,26 @@ export function LandingPage() {
                     <span className="h-3 w-3 rounded-full bg-amber-300/80" />
                     <span className="h-3 w-3 rounded-full bg-emerald-400/80" />
                   </div>
-                  <span className="ml-2 text-xs text-slate-400">
-                    Buselligence Chat
-                  </span>
+                  <span className="ml-2 text-xs text-slate-400">Buselligence AI</span>
                 </div>
 
                 <div className="space-y-4 p-6">
                   <div className="rounded-2xl bg-white/[0.04] p-4 text-left">
-                    <p className="text-xs uppercase tracking-wide text-slate-500">
-                      You
-                    </p>
+                    <p className="text-xs uppercase tracking-wide text-slate-500">You</p>
                     <p className="mt-2 text-sm text-slate-200">
-                      Why did revenue drop last month?
+                      Create an inventory system for my small business.
                     </p>
                   </div>
 
                   <div className="rounded-2xl border border-brand-500/20 bg-brand-500/10 p-4 text-left">
                     <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-brand-200">
                       <MessageSquare className="h-3.5 w-3.5" />
-                      Financial Analyst
+                      AI Software Engineer
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-200">
-                      Revenue declined 8.4% due primarily to three enterprise churn
-                      events totaling $142k ARR. Pipeline offset only 35% of losses.
-                      Want the executive summary or drill into churn cohorts?
+                      Inventory Manager created — database, dashboard, reports, permissions,
+                      and automation. A small business owner gets software that previously
+                      required developers. Ready to customize?
                     </p>
                   </div>
                 </div>
@@ -111,6 +105,9 @@ export function LandingPage() {
           </div>
         </section>
 
+        <NotThisCategory />
+        <PlatformPillars />
+        <Philosophy />
         <Features />
         <Pricing />
       </main>
@@ -119,28 +116,21 @@ export function LandingPage() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-sm text-slate-500 md:flex-row">
           <div className="text-center md:text-left">
             <p>© {new Date().getFullYear()} Salestrics Inc</p>
-            <p className="mt-1">
-              Open source under{" "}
-              <a
-                href="https://github.com/Salestrics/Buselligence/blob/main/LICENSE"
-                target="_blank"
-                rel="noreferrer"
-                className="text-slate-400 transition hover:text-white"
-              >
-                MIT License
-              </a>
-            </p>
+            <p className="mt-1">The Open Source AI Operating System · MIT License</p>
           </div>
-          <div className="flex gap-6">
-            <Link to="/chat" className="hover:text-slate-300">
-              Chat
-            </Link>
-            <Link to="/settings" className="hover:text-slate-300">
-              Settings
-            </Link>
-            <Link to="/sign-up" className="hover:text-slate-300">
-              Sign up
-            </Link>
+          <div className="flex flex-wrap justify-center gap-6">
+            <Link to="/manifesto" className="hover:text-slate-300">Manifesto</Link>
+            <Link to="/workspace" className="hover:text-slate-300">Workspace</Link>
+            <Link to="/chat" className="hover:text-slate-300">Chat</Link>
+            <Link to="/studio" className="hover:text-slate-300">Studio</Link>
+            <a
+              href="https://github.com/Salestrics/Buselligence"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 hover:text-slate-300"
+            >
+              <GitBranch className="h-3.5 w-3.5" /> GitHub
+            </a>
           </div>
         </div>
       </footer>

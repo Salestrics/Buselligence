@@ -53,10 +53,9 @@ export function Pricing() {
                 Connect live data with Model Context Protocol
               </h2>
               <p className="mt-4 text-lg text-slate-400">
-                Buselligence acts as an MCP client. Add stdio, SSE, or HTTP MCP
-                servers in Settings and the model can call their tools during
-                analysis — query databases, read files, and invoke custom BI
-                workflows.
+                Buselligence is MCP-native — the universal connector for AI capabilities.
+                Add stdio, SSE, or HTTP MCP servers and anything becomes an AI tool:
+                databases, files, GitHub, CRM, calendar, IoT, and custom APIs.
               </p>
               <Link
                 to="/settings"

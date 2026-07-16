@@ -90,6 +90,8 @@ import { registerBiRoutes } from "./bi/routes.js";
 import "./bi/schema.js";
 import { registerStudioRoutes } from "./studio/routes.js";
 import "./studio/schema.js";
+import { registerPlatformRoutes } from "./platform/routes.js";
+import "./platform/schema.js";
 import { getRouterConfig, routeModel } from "./router/model-router.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -113,15 +115,26 @@ async function getSession(req: express.Request) {
 
 registerBiRoutes(app, getSession);
 registerStudioRoutes(app, getSession);
+registerPlatformRoutes(app, getSession);
 
 app.get("/api/health", (_req, res) => {
   const hasServerKey = Boolean(process.env.OPENAI_API_KEY);
   res.json({
     ok: true,
     name: "Buselligence",
-    version: "5.0.0",
+    version: "6.0.0",
+    tagline: "AI for Everyone. Owned by Everyone.",
+    mission: "Give every person the power of AI.",
+    category: "Open AI Empowerment Platform",
     license: "MIT",
     features: {
+      aiEmpowermentPlatform: true,
+      universalAssistant: true,
+      aiWorkspace: true,
+      knowledgeEngine: true,
+      learningSystem: true,
+      localAiSupport: true,
+      communityNetwork: true,
       byok: true,
       mcp: true,
       outbound: true,
