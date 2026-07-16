@@ -1,6 +1,7 @@
 import { buildSemanticContext } from "../semantic/manager.js";
 import { listConnectors } from "../connectors/manager.js";
 import { listFiles } from "./manager.js";
+import { completeWithOptionalCredentials } from "../llm/complete.js";
 import type { FileLanguage } from "./types.js";
 
 export const SOFTWARE_ENGINEER_PROMPT = `You are the Buselligence AI Software Engineer — a development agent that understands business context, database schemas, APIs, existing code, MCP tools, and user requirements.
@@ -32,6 +33,9 @@ export interface EngineerPlan {
   files: Array<{ path: string; content: string; language: FileLanguage }>;
   sqlQueries: string[];
   apis: string[];
+  simulated?: boolean;
+  provider?: string;
+  model?: string;
 }
 
 export function buildEngineerContext(
@@ -238,5 +242,56 @@ CREATE TABLE users (
     ],
     sqlQueries: [],
     apis: [],
+    simulated: true,
+  };
+}
+
+export async function generateEngineerPlanWithLlm(
+  userId: string,
+  projectId: string,
+  requirement: string
+): Promise<EngineerPlan> {
+  const context = buildEngineerContext(userId, projectId, requirement);
+  const template = generateEngineerPlan(requirement);
+
+  const llm = await completeWithOptionalCredentials(
+    userId,
+    context,
+    `Create an implementation plan for: ${requirement}\nReturn JSON with keys summary, steps (array), files (array of {path, content, language}).`,
+    () => template.summary
+  );
+
+  if (llm.simulated) {
+    return { ...template, simulated: true };
+  }
+
+  try {
+    const parsed = JSON.parse(llm.text) as Partial<EngineerPlan>;
+    if (parsed.files?.length) {
+      return {
+        summary: parsed.summary ?? template.summary,
+        steps: parsed.steps ?? template.steps,
+        files: parsed.files.map((file) => ({
+          path: file.path,
+          content: file.content,
+          language: (file.language ?? "typescript") as FileLanguage,
+        })),
+        sqlQueries: parsed.sqlQueries ?? template.sqlQueries,
+        apis: parsed.apis ?? template.apis,
+        simulated: false,
+        provider: llm.provider,
+        model: llm.model,
+      };
+    }
+  } catch {
+    // fall through to template
+  }
+
+  return {
+    ...template,
+    summary: llm.text.split("\n")[0] ?? template.summary,
+    simulated: false,
+    provider: llm.provider,
+    model: llm.model,
   };
 }

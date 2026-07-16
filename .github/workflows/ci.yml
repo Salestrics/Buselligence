@@ -24,6 +24,12 @@ jobs:
           npm install --prefix server
           npm install --prefix cli
 
+      - name: Test
+        env:
+          BETTER_AUTH_SECRET: ci-test-secret
+          ENCRYPTION_KEY: ci-encryption-key
+        run: npm run test --prefix server
+
       - name: Build
         run: npm run build
 

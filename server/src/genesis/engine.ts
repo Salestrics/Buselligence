@@ -49,6 +49,19 @@ const AGENTS = [
   { id: "qa_engineer", name: "QA Engineer", emoji: "🧪", role: "QA Engineer" },
 ] as const;
 
+const activeBuilds = new Set<string>();
+
+function claimBuild(buildId: string, userId: string): boolean {
+  const result = db
+    .prepare(
+      `UPDATE genesis_builds
+       SET status = 'building', updated_at = datetime('now')
+       WHERE id = ? AND user_id = ? AND status IN ('pending', 'failed')`
+    )
+    .run(buildId, userId);
+  return result.changes > 0;
+}
+
 function delay(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -305,6 +318,26 @@ export async function* runGenesisBuild(
   const build = getBuild(userId, buildId);
   if (!build) throw new Error("Build not found");
 
+  if (build.status === "building" || activeBuilds.has(buildId)) {
+    throw new Error("Build already in progress");
+  }
+
+  if (build.status === "completed") {
+    yield {
+      type: "complete",
+      message: "Already complete",
+      progress: 100,
+      timestamp: new Date().toISOString(),
+    };
+    return;
+  }
+
+  if (!claimBuild(buildId, userId)) {
+    throw new Error("Unable to start build — another run may be in progress");
+  }
+
+  activeBuilds.add(buildId);
+
   const idea = parseIdea(build.prompt);
   const events: BuildEvent[] = [];
   const stats: BuildStats = { filesCreated: 0, testsPassing: 0, aiDecisions: 0 };
@@ -315,7 +348,8 @@ export async function* runGenesisBuild(
     yield full;
   };
 
-  persistBuild(buildId, { status: "building", progress: 0, events });
+  try {
+    persistBuild(buildId, { status: "building", progress: 0, events });
 
   // Phase 1: Architect
   const architect = AGENTS[0]!;
@@ -495,4 +529,21 @@ export async function* runGenesisBuild(
     stats,
     events,
   });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Build failed";
+    persistBuild(buildId, {
+      status: "failed",
+      progress: build.progress,
+      events,
+    });
+    yield {
+      type: "phase",
+      message: `Build failed: ${message}`,
+      progress: build.progress,
+      timestamp: new Date().toISOString(),
+    };
+    throw error;
+  } finally {
+    activeBuilds.delete(buildId);
+  }
 }

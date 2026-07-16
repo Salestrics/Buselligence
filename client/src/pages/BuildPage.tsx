@@ -57,7 +57,7 @@ export function BuildPage() {
           if (event.type !== "build") {
             setEvents((prev) => [...prev, event]);
           }
-          if (event.progress !== undefined && build) {
+          if (event.progress !== undefined) {
             setBuild((b) => (b ? { ...b, progress: event.progress! } : b));
           }
           if (event.build) {

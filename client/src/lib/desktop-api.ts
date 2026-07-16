@@ -88,14 +88,26 @@ export const desktopApi = {
       body: JSON.stringify(permissions),
     }).then((r) => r.permissions),
 
-  runCommand: (command: string, workspaceId?: string, approved?: boolean) =>
+  previewCommand: (command: string, workspaceId?: string) =>
+    desktopFetch<{
+      requiresApproval: boolean;
+      approvalToken?: string;
+      reason?: string;
+    }>("/api/desktop/command/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ command, workspaceId }),
+    }),
+
+  executeCommand: (command: string, workspaceId?: string, approvalToken?: string) =>
     desktopFetch<{
       requiresApproval?: boolean;
+      approvalToken?: string;
       result?: { command: string; status: string; output: string; previewUrl?: string };
     }>("/api/desktop/command", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ command, workspaceId, approved }),
+      body: JSON.stringify({ command, workspaceId, approvalToken }),
     }),
 
   listSnapshots: (workspaceId: string) =>

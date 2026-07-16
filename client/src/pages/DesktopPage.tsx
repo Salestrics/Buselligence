@@ -43,6 +43,7 @@ export function DesktopPage() {
   const [terminal, setTerminal] = useState<string[]>([]);
   const [running, setRunning] = useState(false);
   const [pendingApproval, setPendingApproval] = useState<string | null>(null);
+  const [approvalToken, setApprovalToken] = useState<string | null>(null);
   const [snapshots, setSnapshots] = useState<Array<{ id: string; label: string; filesChanged: number }>>([]);
 
   const active = workspaces.find((w) => w.id === activeId) ?? workspaces[0];
@@ -103,13 +104,29 @@ export function DesktopPage() {
   async function runCommand(approved = false) {
     if (!command.trim()) return;
     setRunning(true);
-    setPendingApproval(null);
+    if (!approved) {
+      setPendingApproval(null);
+      setApprovalToken(null);
+    }
     try {
-      const res = await desktopApi.runCommand(command, active?.id, approved);
-      if (res.requiresApproval) {
-        setPendingApproval(command);
-        return;
+      if (!approved) {
+        const preview = await desktopApi.previewCommand(command, active?.id);
+        if (preview.reason) {
+          setTerminal((t) => [...t, `$ ${command}`, preview.reason!]);
+          return;
+        }
+        if (preview.requiresApproval) {
+          setPendingApproval(command);
+          setApprovalToken(preview.approvalToken ?? null);
+          return;
+        }
       }
+
+      const res = await desktopApi.executeCommand(
+        command,
+        active?.id,
+        approved ? approvalToken ?? undefined : undefined
+      );
       if (res.result) {
         setTerminal((t) => [
           ...t,
@@ -118,6 +135,8 @@ export function DesktopPage() {
           res.result!.previewUrl ? `Preview: ${res.result!.previewUrl}` : "",
         ].filter(Boolean));
       }
+      setPendingApproval(null);
+      setApprovalToken(null);
     } finally {
       setRunning(false);
     }

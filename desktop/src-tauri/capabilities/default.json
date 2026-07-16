@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "default",
+  "description": "Restricted desktop capabilities",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        { "name": "npm", "cmd": "npm", "args": true },
+        { "name": "node", "cmd": "node", "args": true },
+        { "name": "git", "cmd": "git", "args": true }
+      ]
+    }
+  ]
+}

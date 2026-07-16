@@ -35,7 +35,11 @@ import {
   getPublicSettings,
   resolveCredentials,
   saveUserSettings,
+  serverDemoKeyEnabled,
 } from "./settings.js";
+import { createRateLimiter } from "./security/rate-limit.js";
+import { resolveAnonymousSessionId } from "./security/anonymous-session.js";
+import { globalErrorHandler } from "./security/errors.js";
 import type { AIProviderId } from "./providers/index.js";
 import {
   createCampaign,
@@ -107,6 +111,8 @@ const app = express();
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_URL = process.env.CLIENT_URL ?? "http://localhost:5173";
 
+app.set("trust proxy", 1);
+
 app.use(
   cors({
     origin: CLIENT_URL,
@@ -114,8 +120,12 @@ app.use(
   })
 );
 
+app.use(createRateLimiter({ windowMs: 60_000, max: 300 }));
+app.use("/api/chat", createRateLimiter({ windowMs: 60_000, max: 30 }));
+app.use("/api/genesis", createRateLimiter({ windowMs: 60_000, max: 20 }));
+
 app.all("/api/auth/{*splat}", authHandler);
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
 async function getSession(req: express.Request) {
   return auth.api.getSession({ headers: req.headers as HeadersInit });
@@ -130,7 +140,6 @@ registerGenesisRoutes(app, getSession);
 registerDesktopRoutes(app, getSession);
 
 app.get("/api/health", (_req, res) => {
-  const hasServerKey = Boolean(process.env.OPENAI_API_KEY);
   res.json({
     ok: true,
     name: "Buselligence",
@@ -204,7 +213,7 @@ app.get("/api/health", (_req, res) => {
       deployment: true,
       providers: listProviders().map((provider) => provider.id),
       searchProviders: listSearchProviders().map((provider) => provider.id),
-      serverDefaultKey: hasServerKey,
+      demoModeAvailable: serverDemoKeyEnabled(),
     },
   });
 });
@@ -230,7 +239,7 @@ app.get("/api/settings", async (req, res) => {
 
   res.json({
     settings: getPublicSettings(session.user.id),
-    hasServerDefaultKey: Boolean(process.env.OPENAI_API_KEY),
+    hasServerDefaultKey: serverDemoKeyEnabled(),
   });
 });
 
@@ -261,6 +270,10 @@ app.put("/api/settings", async (req, res) => {
           : typeof req.body?.apiBaseUrl === "string"
             ? req.body.apiBaseUrl
             : undefined,
+      autoApproveMcpTools:
+        typeof req.body?.autoApproveMcpTools === "boolean"
+          ? req.body.autoApproveMcpTools
+          : undefined,
     });
 
     res.json({ settings });
@@ -339,7 +352,7 @@ app.post("/api/mcp/servers/:id/test", async (req, res) => {
     return res.status(404).json({ error: "MCP server not found" });
   }
 
-  const result = await testMcpServer(server);
+  const result = await testMcpServer(server, session.user.id);
   res.json(result);
 });
 
@@ -649,9 +662,6 @@ app.delete("/api/outbound/activities/:id", async (req, res) => {
 
 app.get("/api/usage", async (req, res) => {
   const session = await getSession(req);
-  const anonymousSessionId = req.headers["x-anonymous-session"] as
-    | string
-    | undefined;
 
   if (session?.user) {
     const credentials = resolveCredentials(session.user.id);
@@ -667,19 +677,18 @@ app.get("/api/usage", async (req, res) => {
     });
   }
 
-  const tokensUsed = anonymousSessionId
-    ? getAnonymousTokens(anonymousSessionId)
-    : 0;
+  const anonymousSessionId = resolveAnonymousSessionId(req, res);
+  const tokensUsed = getAnonymousTokens(anonymousSessionId);
 
   res.json({
     authenticated: false,
     tokensUsed,
-    limit: process.env.OPENAI_API_KEY ? FREE_TOKEN_LIMIT : null,
+    limit: serverDemoKeyEnabled() ? FREE_TOKEN_LIMIT : null,
     canSave: false,
-    hasApiKey: Boolean(process.env.OPENAI_API_KEY),
-    apiKeySource: process.env.OPENAI_API_KEY ? "server" : null,
-    provider: process.env.OPENAI_API_KEY ? "openai" : null,
-    model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+    hasApiKey: serverDemoKeyEnabled(),
+    apiKeySource: serverDemoKeyEnabled() ? "server" : null,
+    provider: serverDemoKeyEnabled() ? "openai" : null,
+    model: serverDemoKeyEnabled() ? process.env.OPENAI_MODEL ?? "gpt-4o-mini" : null,
   });
 });
 
@@ -687,9 +696,9 @@ app.post("/api/chat", async (req, res) => {
   const session = await getSession(req);
   const isAuthenticated = Boolean(session?.user);
   const userId = session?.user?.id;
-  const anonymousSessionId = req.headers["x-anonymous-session"] as
-    | string
-    | undefined;
+  const anonymousSessionId = isAuthenticated
+    ? undefined
+    : resolveAnonymousSessionId(req, res);
   const messages = req.body?.messages as ChatMessage[] | undefined;
 
   if (!messages?.length) {
@@ -713,7 +722,7 @@ app.post("/api/chat", async (req, res) => {
     });
   }
 
-  if (!isAuthenticated && !process.env.OPENAI_API_KEY) {
+  if (!isAuthenticated && !serverDemoKeyEnabled()) {
     return res.status(401).json({
       error: "api_key_required",
       message:
@@ -733,6 +742,9 @@ app.post("/api/chat", async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
+  const abortController = new AbortController();
+  req.on("close", () => abortController.abort());
+
   try {
     const chatOptions: StreamChatOptions = {
       messages,
@@ -741,12 +753,22 @@ app.post("/api/chat", async (req, res) => {
       isAuthenticated,
       agentId: (req.body?.agentId as AgentId | undefined) ?? "buselligence",
       noSqlMode: Boolean(req.body?.noSqlMode),
+      approvedToolCalls: Array.isArray(req.body?.approvedToolCalls)
+        ? (req.body.approvedToolCalls as string[])
+        : undefined,
+      signal: abortController.signal,
     };
 
     const { stream, getUsage } = await createChatStream(chatOptions);
 
     for await (const event of stream) {
+      if (abortController.signal.aborted) break;
       res.write(`data: ${JSON.stringify(event)}\n\n`);
+    }
+
+    if (abortController.signal.aborted) {
+      res.end();
+      return;
     }
 
     const usage = await getUsage();
@@ -864,6 +886,8 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(clientDist, "index.html"));
   });
 }
+
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Buselligence server running on http://localhost:${PORT}`);

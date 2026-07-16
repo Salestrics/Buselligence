@@ -10,6 +10,7 @@ import {
   addAnonymousTokens,
   FREE_TOKEN_LIMIT,
   getAnonymousTokens,
+  reserveAnonymousTokens,
   type ChatMessage,
 } from "./db.js";
 import { getAgent, buildAgentWorkflowPrompt, type AgentId } from "./agents/definitions.js";
@@ -22,8 +23,9 @@ import {
   resolveModel,
   type ChatStreamEvent,
   type ProviderCredentials,
+  type ToolCall,
 } from "./providers/index.js";
-import { resolveCredentials } from "./settings.js";
+import { resolveCredentials, serverDemoKeyEnabled, userAutoApprovesMcpTools } from "./settings.js";
 
 export {
   countMessageTokens,
@@ -43,6 +45,8 @@ export interface StreamChatOptions {
   isAuthenticated: boolean;
   agentId?: AgentId;
   noSqlMode?: boolean;
+  approvedToolCalls?: string[];
+  signal?: AbortSignal;
 }
 
 export interface StreamChatResult {
@@ -55,7 +59,12 @@ export interface StreamChatResult {
     model: string | null;
     mcpToolCount: number;
     agentId: string | null;
+    simulated: boolean;
   }>;
+}
+
+function sanitizeClientMessages(messages: ChatMessage[]): ChatMessage[] {
+  return messages.filter((message) => message.role !== "system");
 }
 
 export function checkAnonymousLimit(
@@ -68,7 +77,7 @@ export function checkAnonymousLimit(
   }
 
   if (!sessionId) {
-    return { allowed: true, tokensUsed: 0, limit: FREE_TOKEN_LIMIT };
+    return { allowed: false, tokensUsed: 0, limit: FREE_TOKEN_LIMIT };
   }
 
   const tokensUsed = getAnonymousTokens(sessionId);
@@ -126,6 +135,7 @@ async function buildMockStream(reply: string): Promise<StreamChatResult> {
       model: null,
       mcpToolCount: 0,
       agentId: null,
+      simulated: true,
     }),
   };
 }
@@ -133,14 +143,19 @@ async function buildMockStream(reply: string): Promise<StreamChatResult> {
 export async function createChatStream(
   options: StreamChatOptions
 ): Promise<StreamChatResult> {
-  const credentials = resolveCredentials(options.userId);
+  const allowServerKey =
+    !options.isAuthenticated && serverDemoKeyEnabled();
+  const credentials = resolveCredentials(options.userId, { allowServerKey });
   const agentId = options.agentId ?? "buselligence";
   const noSqlMode = options.noSqlMode ?? false;
-  const lastUserMessage = [...options.messages].reverse().find((m) => m.role === "user")?.content ?? "";
+  const clientMessages = sanitizeClientMessages(options.messages);
+  const lastUserMessage =
+    [...clientMessages].reverse().find((m) => m.role === "user")?.content ?? "";
+  const approvedToolIds = new Set(options.approvedToolCalls ?? []);
 
   if (!credentials) {
     const mockReply =
-      "Buselligence is your self-hosted AI analyst. Sign in, define your semantic layer, connect data sources, and add your API key to start analyzing business data.";
+      "Buselligence is your self-hosted AI runtime. Sign in and add your API key in Settings to start building with real models.";
 
     const result = await buildMockStream(mockReply);
     const originalGetUsage = result.getUsage;
@@ -149,7 +164,11 @@ export async function createChatStream(
       stream: result.stream,
       getUsage: async () => {
         const usage = await originalGetUsage();
-        if (!options.isAuthenticated && options.anonymousSessionId) {
+        if (
+          !options.isAuthenticated &&
+          options.anonymousSessionId &&
+          usage.totalTokens > 0
+        ) {
           addAnonymousTokens(options.anonymousSessionId, usage.totalTokens);
         }
         return usage;
@@ -161,7 +180,7 @@ export async function createChatStream(
 
   const fullMessages: ChatMessage[] = [
     { role: "system", content: systemContent },
-    ...options.messages,
+    ...clientMessages,
   ];
 
   const providerCredentials: ProviderCredentials = resolveModel({
@@ -173,10 +192,31 @@ export async function createChatStream(
 
   const adapter = getProviderAdapter(providerCredentials.provider);
   const mcpServers = options.userId ? listMcpServers(options.userId) : [];
-  const { tools, executeTool } = await loadMcpTools(mcpServers);
+  const autoApproveTools =
+    userAutoApprovesMcpTools(options.userId) || approvedToolIds.size > 0;
+  const { tools, executeTool: baseExecuteTool } = await loadMcpTools(
+    mcpServers,
+    options.userId ?? "anonymous",
+    { autoApproveTools }
+  );
+
+  const executeTool = async (call: ToolCall) => {
+    if (!autoApproveTools && !approvedToolIds.has(call.id)) {
+      return {
+        toolCallId: call.id,
+        content:
+          "Tool execution blocked pending approval. Re-send the chat with approvedToolCalls including this tool call id.",
+        isError: true,
+      };
+    }
+    return baseExecuteTool(call);
+  };
 
   const dataSources = options.userId
-    ? [...getConnectorSourceNames(options.userId), ...mcpServers.filter((s) => s.enabled).map((s) => `mcp:${s.name}`)]
+    ? [
+        ...getConnectorSourceNames(options.userId),
+        ...mcpServers.filter((s) => s.enabled).map((s) => `mcp:${s.name}`),
+      ]
     : [];
 
   if (options.userId) {
@@ -205,12 +245,17 @@ export async function createChatStream(
             resourceName: call.name,
             dataSources: [call.name],
             agentId,
-            metadata: { arguments: call.arguments },
+            metadata: {
+              toolCallId: call.id,
+              argumentKeys: Object.keys(call.arguments ?? {}),
+            },
           });
         }
         return executeTool(call);
       },
+      signal: options.signal,
     })) {
+      if (options.signal?.aborted) return;
       if (event.type === "delta" && event.content) {
         completionText += event.content;
       }
@@ -247,6 +292,7 @@ export async function createChatStream(
         model: providerCredentials.model ?? null,
         mcpToolCount: tools.length,
         agentId,
+        simulated: false,
       };
     },
   };

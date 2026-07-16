@@ -66,6 +66,17 @@ export function logAudit(
   }
 ): AuditLogEntry {
   const id = randomUUID();
+  const sanitizedMetadata = entry.metadata
+    ? Object.fromEntries(
+        Object.entries(entry.metadata).map(([key, value]) => {
+          if (key === "arguments" && typeof value === "object" && value !== null) {
+            return [key, { keys: Object.keys(value as Record<string, unknown>) }];
+          }
+          return [key, value];
+        })
+      )
+    : {};
+
   db.prepare(
     `INSERT INTO audit_logs (id, user_id, action, resource_type, resource_id, resource_name, query_text, data_sources, rows_returned, agent_id, metadata, ip_address)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
@@ -74,7 +85,7 @@ export function logAudit(
     entry.resourceType ?? null, entry.resourceId ?? null, entry.resourceName ?? null,
     entry.queryText ?? null, JSON.stringify(entry.dataSources ?? []),
     entry.rowsReturned ?? null, entry.agentId ?? null,
-    JSON.stringify(entry.metadata ?? {}), entry.ipAddress ?? null
+    JSON.stringify(sanitizedMetadata), entry.ipAddress ?? null
   );
   return toPublic(db.prepare("SELECT * FROM audit_logs WHERE id = ?").get(id) as AuditRow);
 }

@@ -1,6 +1,18 @@
 import type { Express, Request } from "express";
-import { LOCAL_TOOLS, executeCommand, listCommandLog } from "./command-bridge.js";
-import { getGitHubConnection, listOrgs, listRepos } from "./github.js";
+import {
+  LOCAL_TOOLS,
+  executeCommand,
+  listCommandLog,
+  previewCommand,
+} from "./command-bridge.js";
+import {
+  exchangeGitHubCode,
+  getGitHubAuthorizeUrl,
+  getGitHubConnection,
+  githubOAuthConfigured,
+  listOrgs,
+  listRepos,
+} from "./github.js";
 import { DESKTOP_HEADLINE, DESKTOP_TAGLINE, getLocalRuntimeConfig } from "./local.js";
 import { getPermissions, savePermissions } from "./permissions.js";
 import { detectStack, scanProject } from "./scanner.js";
@@ -23,6 +35,7 @@ export function registerDesktopRoutes(app: Express, getSession: GetSession) {
       headline: DESKTOP_HEADLINE,
       stack: "Tauri",
       available: true,
+      githubOAuthConfigured: githubOAuthConfigured(),
       download: {
         windows: "Buselligence-setup.exe",
         mac: "Buselligence.dmg",
@@ -43,11 +56,48 @@ export function registerDesktopRoutes(app: Express, getSession: GetSession) {
   app.get("/api/desktop/github", async (req, res) => {
     const session = await getSession(req);
     if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+    const connection = getGitHubConnection(session.user.id);
+    const orgs = await listOrgs(session.user.id);
+    const repos = await listRepos(session.user.id, req.query.org as string | undefined);
+
     res.json({
-      connection: getGitHubConnection(session.user.id),
-      orgs: listOrgs(),
-      repos: listRepos(req.query.org as string | undefined),
+      connection,
+      orgs,
+      repos,
+      authorizeUrl: getGitHubAuthorizeUrl(session.user.id),
     });
+  });
+
+  app.get("/api/desktop/github/connect", async (req, res) => {
+    const session = await getSession(req);
+    if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+
+    const url = getGitHubAuthorizeUrl(session.user.id);
+    if (!url) {
+      return res.status(400).json({
+        error: "GitHub OAuth is not configured. Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET.",
+        demoMode: true,
+      });
+    }
+
+    res.redirect(url);
+  });
+
+  app.get("/api/desktop/github/callback", async (req, res) => {
+    const code = req.query.code as string | undefined;
+    const state = req.query.state as string | undefined;
+    if (!code || !state) {
+      return res.status(400).send("Missing OAuth code or state");
+    }
+
+    const result = await exchangeGitHubCode(code, state);
+    if (!result) {
+      return res.status(400).send("GitHub OAuth failed");
+    }
+
+    const clientUrl = process.env.CLIENT_URL ?? "http://localhost:5173";
+    res.redirect(`${clientUrl}/desktop?github=connected`);
   });
 
   app.get("/api/desktop/workspaces", async (req, res) => {
@@ -102,18 +152,32 @@ export function registerDesktopRoutes(app: Express, getSession: GetSession) {
     res.json({ permissions: savePermissions(session.user.id, req.body) });
   });
 
+  app.post("/api/desktop/command/preview", async (req, res) => {
+    const session = await getSession(req);
+    if (!session?.user) return res.status(401).json({ error: "Authentication required" });
+    const { command, workspaceId } = req.body;
+    if (!command) return res.status(400).json({ error: "command required" });
+    res.json(previewCommand(session.user.id, command, workspaceId));
+  });
+
   app.post("/api/desktop/command", async (req, res) => {
     const session = await getSession(req);
     if (!session?.user) return res.status(401).json({ error: "Authentication required" });
-    const { command, workspaceId, approved } = req.body;
+    const { command, workspaceId, approvalToken } = req.body;
     if (!command) return res.status(400).json({ error: "command required" });
 
-    const perms = getPermissions(session.user.id);
-    if (perms.askBeforeExecution && !approved) {
-      return res.json({ requiresApproval: true, command, permissions: perms });
+    const preview = previewCommand(session.user.id, command, workspaceId);
+    if (preview.requiresApproval && !approvalToken) {
+      return res.json({
+        requiresApproval: true,
+        command,
+        approvalToken: preview.approvalToken,
+      });
     }
 
-    res.json({ result: executeCommand(session.user.id, command, workspaceId) });
+    res.json({
+      result: executeCommand(session.user.id, command, workspaceId, approvalToken),
+    });
   });
 
   app.get("/api/desktop/commands", async (req, res) => {

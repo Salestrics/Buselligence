@@ -19,6 +19,7 @@ import { generateDocs } from "./docs-generator.js";
 import {
   buildEngineerContext,
   generateEngineerPlan,
+  generateEngineerPlanWithLlm,
   SOFTWARE_ENGINEER_PROMPT,
 } from "./engineer.js";
 import {
@@ -183,7 +184,11 @@ export function registerStudioRoutes(app: Express, getSession: GetSession) {
     if (!requirement) return res.status(400).json({ error: "requirement required" });
 
     const context = buildEngineerContext(session.user.id, req.params.id!, requirement);
-    const plan = generateEngineerPlan(requirement);
+    const plan = await generateEngineerPlanWithLlm(
+      session.user.id,
+      req.params.id!,
+      requirement
+    );
 
     for (const file of plan.files) {
       const existing = getFile(session.user.id, req.params.id!, file.path);

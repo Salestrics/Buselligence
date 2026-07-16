@@ -98,6 +98,8 @@ export const googleProvider: AIProviderAdapter = {
     let prompt = latestUserMessage;
 
     for (let round = 0; round < maxToolRounds; round++) {
+      if (context.signal?.aborted) return;
+
       const result = await chat.sendMessageStream(prompt);
       const functionCalls: ToolCall[] = [];
 

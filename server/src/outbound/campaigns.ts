@@ -152,6 +152,17 @@ export function setCampaignStatus(
   ).run(status, error ?? null, status, id, userId);
 }
 
+export function tryClaimCampaignRun(id: string, userId: string): boolean {
+  const result = db
+    .prepare(
+      `UPDATE outbound_campaigns
+       SET status = 'running', last_run_error = NULL, updated_at = datetime('now')
+       WHERE id = ? AND user_id = ? AND status IN ('draft', 'completed', 'failed')`
+    )
+    .run(id, userId);
+  return result.changes > 0;
+}
+
 export function refreshCampaignLeadCount(id: string, userId: string): void {
   const count = (
     db

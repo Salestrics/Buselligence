@@ -3,8 +3,16 @@ import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { randomUUID } from "node:crypto";
+import { decryptSecret, encryptSecret } from "../crypto.js";
 import { db } from "../db.js";
 import type { ToolDefinition, ToolCall, ToolResult } from "../providers/types.js";
+import {
+  assertMcpTransportAllowed,
+  assertStdioCommandAllowed,
+  mcpConnectionTimeoutMs,
+  sanitizeStdioEnv,
+} from "../security/mcp-policy.js";
+import { assertSafeMcpRemoteUrl } from "../security/url-policy.js";
 import type {
   McpServerConfig,
   McpServerInput,
@@ -29,8 +37,16 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_mcp_servers_user_id ON mcp_servers(user_id);
 `);
 
+function encryptConfig(config: McpServerConfig): string {
+  return encryptSecret(JSON.stringify(config));
+}
+
 function parseConfig(raw: string): McpServerConfig {
-  return JSON.parse(raw) as McpServerConfig;
+  try {
+    return JSON.parse(decryptSecret(raw)) as McpServerConfig;
+  } catch {
+    return JSON.parse(raw) as McpServerConfig;
+  }
 }
 
 function toPublic(row: McpServerRow): McpServerPublic {
@@ -43,6 +59,15 @@ function toPublic(row: McpServerRow): McpServerPublic {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+function validateServerInput(userId: string, input: McpServerInput): void {
+  assertMcpTransportAllowed(input.transport, userId);
+  if (input.transport === "stdio") {
+    assertStdioCommandAllowed(input.config);
+  } else if (input.config.remote?.url) {
+    assertSafeMcpRemoteUrl(input.config.remote.url);
+  }
 }
 
 export function listMcpServers(userId: string): McpServerPublic[] {
@@ -70,6 +95,8 @@ export function createMcpServer(
   userId: string,
   input: McpServerInput
 ): McpServerPublic {
+  validateServerInput(userId, input);
+
   const id = randomUUID();
   db.prepare(
     `INSERT INTO mcp_servers (id, user_id, name, transport, config, enabled)
@@ -79,7 +106,7 @@ export function createMcpServer(
     userId,
     input.name,
     input.transport,
-    JSON.stringify(input.config),
+    encryptConfig(input.config),
     input.enabled === false ? 0 : 1
   );
 
@@ -94,15 +121,24 @@ export function updateMcpServer(
   const existing = getMcpServer(id, userId);
   if (!existing) return undefined;
 
+  const next: McpServerInput = {
+    name: input.name ?? existing.name,
+    transport: input.transport ?? existing.transport,
+    config: input.config ?? existing.config,
+    enabled: input.enabled ?? existing.enabled,
+  };
+
+  validateServerInput(userId, next);
+
   db.prepare(
     `UPDATE mcp_servers
      SET name = ?, transport = ?, config = ?, enabled = ?, updated_at = datetime('now')
      WHERE id = ? AND user_id = ?`
   ).run(
-    input.name ?? existing.name,
-    input.transport ?? existing.transport,
-    JSON.stringify(input.config ?? existing.config),
-    input.enabled === undefined ? (existing.enabled ? 1 : 0) : input.enabled ? 1 : 0,
+    next.name,
+    next.transport,
+    encryptConfig(next.config),
+    next.enabled ? 1 : 0,
     id,
     userId
   );
@@ -117,8 +153,15 @@ export function deleteMcpServer(id: string, userId: string): boolean {
   return result.changes > 0;
 }
 
-async function createTransport(config: McpServerConfig, transport: McpTransport) {
+async function createTransport(
+  config: McpServerConfig,
+  transport: McpTransport,
+  userId: string
+) {
+  assertMcpTransportAllowed(transport, userId);
+
   if (transport === "stdio") {
+    assertStdioCommandAllowed(config);
     if (!config.stdio?.command) {
       throw new Error("stdio transport requires a command");
     }
@@ -126,10 +169,7 @@ async function createTransport(config: McpServerConfig, transport: McpTransport)
     return new StdioClientTransport({
       command: config.stdio.command,
       args: config.stdio.args ?? [],
-      env: {
-        ...process.env,
-        ...config.stdio.env,
-      } as Record<string, string>,
+      env: sanitizeStdioEnv(config.stdio.env),
       cwd: config.stdio.cwd,
     });
   }
@@ -138,7 +178,7 @@ async function createTransport(config: McpServerConfig, transport: McpTransport)
     throw new Error(`${transport} transport requires a URL`);
   }
 
-  const url = new URL(config.remote.url);
+  const url = assertSafeMcpRemoteUrl(config.remote.url);
   const requestInit = config.remote.headers
     ? { headers: config.remote.headers }
     : undefined;
@@ -152,20 +192,27 @@ async function createTransport(config: McpServerConfig, transport: McpTransport)
 
 async function withMcpClient<T>(
   server: McpServerPublic,
+  userId: string,
   fn: (client: Client) => Promise<T>
 ): Promise<T> {
-  const transport = await createTransport(server.config, server.transport);
+  const timeoutMs = mcpConnectionTimeoutMs();
+  const transport = await createTransport(server.config, server.transport, userId);
   const client = new Client({
     name: "buselligence",
-    version: "2.0.0",
+    version: "8.0.0",
   });
 
-  await client.connect(transport);
+  const connectPromise = client.connect(transport);
+  const timeout = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error("MCP connection timed out")), timeoutMs);
+  });
+
+  await Promise.race([connectPromise, timeout]);
 
   try {
     return await fn(client);
   } finally {
-    await client.close();
+    await client.close().catch(() => undefined);
   }
 }
 
@@ -189,10 +236,11 @@ function parseNamespacedToolName(
 }
 
 export async function testMcpServer(
-  server: McpServerPublic
+  server: McpServerPublic,
+  userId: string
 ): Promise<McpTestResult> {
   try {
-    const tools = await withMcpClient(server, async (client) => {
+    const tools = await withMcpClient(server, userId, async (client) => {
       const response = await client.listTools();
       return response.tools;
     });
@@ -217,7 +265,9 @@ export async function testMcpServer(
 }
 
 export async function loadMcpTools(
-  servers: McpServerPublic[]
+  servers: McpServerPublic[],
+  userId: string,
+  options?: { autoApproveTools?: boolean }
 ): Promise<{
   tools: ToolDefinition[];
   executeTool: (call: ToolCall) => Promise<ToolResult>;
@@ -231,8 +281,8 @@ export async function loadMcpTools(
   }> = [];
 
   for (const server of enabledServers) {
-  try {
-      const tools = await withMcpClient(server, async (client) => {
+    try {
+      const tools = await withMcpClient(server, userId, async (client) => {
         const response = await client.listTools();
         return response.tools;
       });
@@ -262,7 +312,18 @@ export async function loadMcpTools(
     }
   }
 
+  const autoApprove = options?.autoApproveTools ?? false;
+
   async function executeTool(call: ToolCall): Promise<ToolResult> {
+    if (!autoApprove) {
+      return {
+        toolCallId: call.id,
+        content:
+          "MCP tool execution requires approval. Enable auto-approve in Settings or pass approvedToolCalls in your chat request.",
+        isError: true,
+      };
+    }
+
     const parsed = parseNamespacedToolName(call.name);
     if (!parsed) {
       return {
@@ -286,7 +347,7 @@ export async function loadMcpTools(
     }
 
     try {
-      const result = await withMcpClient(entry.server, async (client) => {
+      const result = await withMcpClient(entry.server, userId, async (client) => {
         return client.callTool({
           name: entry.toolName,
           arguments: call.arguments,

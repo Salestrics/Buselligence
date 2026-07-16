@@ -3,6 +3,7 @@ import {
   getCampaign,
   refreshCampaignLeadCount,
   setCampaignStatus,
+  tryClaimCampaignRun,
 } from "./campaigns.js";
 import { findOrCreateCompany, listCompanies } from "./companies.js";
 import { saveDiscoveredLead } from "./contacts.js";
@@ -60,7 +61,15 @@ export async function runOutboundCampaign(
     };
   }
 
-  setCampaignStatus(campaignId, userId, "running");
+  if (!tryClaimCampaignRun(campaignId, userId)) {
+    return {
+      ok: false,
+      leadsFound: 0,
+      searchesRun: 0,
+      companiesCreated: 0,
+      message: "Campaign is already running or not available to run.",
+    };
+  }
 
   try {
     const queries = generateSearchQueries(campaign);

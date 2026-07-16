@@ -12,6 +12,7 @@ export const db = new Database(dbPath);
 
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
+db.pragma("busy_timeout = 5000");
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS anonymous_sessions (
@@ -43,20 +44,48 @@ export function getAnonymousTokens(sessionId: string): number {
 }
 
 export function addAnonymousTokens(sessionId: string, tokens: number): number {
-  const existing = getAnonymousTokens(sessionId);
-  const total = existing + tokens;
-
-  if (existing === 0) {
+  const apply = db.transaction((id: string, delta: number) => {
     db.prepare(
-      "INSERT INTO anonymous_sessions (id, tokens_used) VALUES (?, ?)"
-    ).run(sessionId, total);
-  } else {
-    db.prepare(
-      "UPDATE anonymous_sessions SET tokens_used = ?, updated_at = datetime('now') WHERE id = ?"
-    ).run(total, sessionId);
-  }
+      `INSERT INTO anonymous_sessions (id, tokens_used)
+       VALUES (?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         tokens_used = tokens_used + excluded.tokens_used,
+         updated_at = datetime('now')`
+    ).run(id, delta);
 
-  return total;
+    return getAnonymousTokens(id);
+  });
+
+  return apply(sessionId, tokens);
+}
+
+export function reserveAnonymousTokens(
+  sessionId: string,
+  requested: number,
+  limit: number
+): { allowed: boolean; tokensUsed: number } {
+  const reserve = db.transaction((id: string, amount: number, cap: number) => {
+    const row = db
+      .prepare("SELECT tokens_used FROM anonymous_sessions WHERE id = ?")
+      .get(id) as { tokens_used: number } | undefined;
+    const current = row?.tokens_used ?? 0;
+
+    if (current + amount > cap) {
+      return { allowed: false, tokensUsed: current };
+    }
+
+    if (!row) {
+      db.prepare("INSERT INTO anonymous_sessions (id, tokens_used) VALUES (?, ?)").run(id, amount);
+    } else {
+      db.prepare(
+        "UPDATE anonymous_sessions SET tokens_used = tokens_used + ?, updated_at = datetime('now') WHERE id = ?"
+      ).run(amount, id);
+    }
+
+    return { allowed: true, tokensUsed: current + amount };
+  });
+
+  return reserve(sessionId, requested, limit);
 }
 
 export interface ChatMessage {

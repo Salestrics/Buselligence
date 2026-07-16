@@ -78,7 +78,7 @@ export function provisionWorkspace(
   userId: string,
   repoFullName: string
 ): ProvisionResult {
-  const repo = getRepo(repoFullName);
+  const repo = getRepo(userId, repoFullName);
   const repoName = repo?.name ?? repoFullName.split("/").pop() ?? "workspace";
   const stackDetect = detectStack(repoName);
   const intelligence = scanProject(repoName, stackDetect.items);

@@ -156,6 +156,14 @@ export function StudioPage() {
     }
   }
 
+  useEffect(() => {
+    if (!projectId || !activeFile || editorContent.length > 500_000) return;
+    const timer = window.setTimeout(() => {
+      studioApi.saveFile(projectId, activeFile, editorContent).catch(() => undefined);
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [projectId, activeFile, editorContent]);
+
   async function runEngineer(e: FormEvent) {
     e.preventDefault();
     if (!projectId || !copilotInput.trim()) return;

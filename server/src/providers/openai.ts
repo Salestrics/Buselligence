@@ -52,6 +52,8 @@ export const openaiProvider: AIProviderAdapter = {
     const maxToolRounds = 8;
 
     for (let round = 0; round < maxToolRounds; round++) {
+      if (context.signal?.aborted) return;
+
       const stream = await client.chat.completions.create({
         model: context.credentials.model ?? "gpt-4o-mini",
         messages: conversation,
@@ -67,6 +69,7 @@ export const openaiProvider: AIProviderAdapter = {
       >();
 
       for await (const chunk of stream) {
+        if (context.signal?.aborted) return;
         const choice = chunk.choices[0];
         const delta = choice?.delta;
 

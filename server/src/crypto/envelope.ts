@@ -17,10 +17,12 @@ const DEK_LENGTH = 32;
 export type KmsProvider = "local" | "aws_kms" | "vault" | "gcp_kms";
 
 function getMasterKey(): Buffer {
-  const secret =
-    process.env.ENCRYPTION_KEY ??
-    process.env.BETTER_AUTH_SECRET ??
-    "buselligence-dev-key-change-me";
+  const secret = process.env.ENCRYPTION_KEY ?? process.env.BETTER_AUTH_SECRET;
+  if (!secret) {
+    throw new Error(
+      "ENCRYPTION_KEY or BETTER_AUTH_SECRET is required for envelope encryption"
+    );
+  }
   return createHash("sha256").update(secret).digest();
 }
 

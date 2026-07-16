@@ -71,6 +71,7 @@ export function SettingsPage() {
   const [model, setModel] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [apiBaseUrl, setApiBaseUrl] = useState("");
+  const [autoApproveMcpTools, setAutoApproveMcpTools] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -97,6 +98,7 @@ export function SettingsPage() {
         setProvider(data.settings.provider);
         setModel(data.settings.model);
         setApiBaseUrl(data.settings.apiBaseUrl ?? "");
+        setAutoApproveMcpTools(Boolean(data.settings.autoApproveMcpTools));
       })
       .catch(() => setError("Failed to load settings"));
   }, []);
@@ -120,6 +122,7 @@ export function SettingsPage() {
         model,
         apiKey: apiKey.trim() ? apiKey.trim() : undefined,
         apiBaseUrl: apiBaseUrl.trim() ? apiBaseUrl.trim() : null,
+        autoApproveMcpTools,
       });
       setSettings(updated);
       setApiKey("");
@@ -316,6 +319,18 @@ export function SettingsPage() {
                   placeholder="https://api.openai.com/v1"
                   className="w-full rounded-xl border border-white/10 bg-[#0b1020] px-4 py-3 text-white outline-none focus:border-brand-500"
                 />
+              </label>
+
+              <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#0b1020] px-4 py-3">
+                <input
+                  type="checkbox"
+                  checked={autoApproveMcpTools}
+                  onChange={(e) => setAutoApproveMcpTools(e.target.checked)}
+                  className="h-4 w-4 rounded border-white/20"
+                />
+                <span className="text-sm text-slate-300">
+                  Auto-approve MCP tool execution in chat (off by default for safety)
+                </span>
               </label>
 
               {selectedProvider?.docsUrl ? (

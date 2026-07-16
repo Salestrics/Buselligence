@@ -1,0 +1,22 @@
+services:
+  buselligence:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:3001}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3001}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY}
+      ALLOW_SERVER_DEMO_KEY: ${ALLOW_SERVER_DEMO_KEY:-false}
+      MCP_ALLOW_STDIO: ${MCP_ALLOW_STDIO:-false}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+    volumes:
+      - buselligence-data:/app/server/data
+    restart: unless-stopped
+
+volumes:
+  buselligence-data:

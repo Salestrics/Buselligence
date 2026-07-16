@@ -62,6 +62,7 @@ export interface StreamChatContext {
   credentials: ProviderCredentials;
   tools: ToolDefinition[];
   executeTool: (call: ToolCall) => Promise<ToolResult>;
+  signal?: AbortSignal;
 }
 
 export interface AIProviderAdapter {

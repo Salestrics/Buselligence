@@ -1,17 +1,28 @@
 import "./load-env.js";
 import Database from "better-sqlite3";
 import { hashPassword } from "better-auth/crypto";
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const authDbPath = path.join(__dirname, "..", "data", "auth.db");
 
+function randomPassword(): string {
+  return `demo-${randomBytes(12).toString("base64url")}`;
+}
+
 async function seed() {
+  const isProduction = process.env.NODE_ENV === "production";
   const email = process.env.SEED_USER_EMAIL ?? "demo@buselligence.com";
-  const password = process.env.SEED_USER_PASSWORD ?? "demo123456";
+  const password =
+    process.env.SEED_USER_PASSWORD ?? (isProduction ? randomPassword() : "demo123456");
   const name = process.env.SEED_USER_NAME ?? "Demo User";
+
+  if (isProduction && !process.env.SEED_USER_PASSWORD) {
+    console.log("Production seed: generated random demo password (not logged).");
+    console.log("Set SEED_USER_PASSWORD explicitly for a known credential.");
+  }
 
   const db = new Database(authDbPath);
 
@@ -40,7 +51,9 @@ async function seed() {
   ).run(accountId, email, userId, hashedPassword, now, now);
 
   console.log(`Seeded demo user: ${email}`);
-  console.log(`Password: ${password}`);
+  if (!isProduction) {
+    console.log(`Password: ${password}`);
+  }
 }
 
 seed().catch(console.error);

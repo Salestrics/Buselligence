@@ -4,7 +4,7 @@ import { db } from "../db.js";
 import type { ConnectorType, DataConnectorInput, DataConnectorPublic } from "./types.js";
 import { CONNECTOR_DEFINITIONS } from "./types.js";
 
-import "../bi/schema.js";
+import { assertSafePostgresHost } from "../security/url-policy.js";
 
 interface ConnectorRow {
   id: string;
@@ -112,6 +112,9 @@ export async function testConnector(id: string, userId: string): Promise<{ ok: b
 
 async function testPostgres(connectionString: string): Promise<{ ok: boolean; message: string }> {
   try {
+    const parsed = new URL(connectionString.replace(/^postgresql:/, "http:"));
+    assertSafePostgresHost(parsed.hostname);
+
     const { default: pg } = await import("pg");
     const client = new pg.Client({ connectionString, connectionTimeoutMillis: 5000 });
     await client.connect();

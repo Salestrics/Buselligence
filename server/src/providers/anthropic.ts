@@ -52,6 +52,8 @@ export const anthropicProvider: AIProviderAdapter = {
     const maxToolRounds = 8;
 
     for (let round = 0; round < maxToolRounds; round++) {
+      if (context.signal?.aborted) return;
+
       const stream = client.messages.stream({
         model: context.credentials.model ?? "claude-sonnet-4-20250514",
         max_tokens: 4096,

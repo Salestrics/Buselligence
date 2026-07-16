@@ -26,7 +26,17 @@ cp .env.example .env
 
 Edit `.env` — at minimum set `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY` (generate with `openssl rand -base64 32`).
 
-Optional: add `OPENAI_API_KEY` for anonymous demo chat.
+Security-related optional variables:
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `ALLOW_SERVER_DEMO_KEY` | `true` in dev | Allow anonymous demo chat via `OPENAI_API_KEY` |
+| `MCP_ALLOW_STDIO` | `false` | Enable stdio MCP (requires `MCP_STDIO_ALLOWLIST`) |
+| `MCP_AUTO_EXECUTE_TOOLS` | `false` | Auto-run MCP tools without per-user approval |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | unset | Real GitHub OAuth for Desktop (demo data when unset) |
+| `KMS_PROVIDER` | `local` | Envelope encryption backend (`local`, `aws_kms`, `vault`, `gcp_kms`) |
+
+Optional: add `OPENAI_API_KEY` for anonymous demo chat only when `ALLOW_SERVER_DEMO_KEY` is not `false`.
 
 ## 3. Start development
 

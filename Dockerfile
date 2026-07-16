@@ -20,12 +20,22 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3001
 
+RUN apk add --no-cache curl
+
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/server/package*.json ./server/
 COPY --from=builder /app/server/dist ./server/dist
 COPY --from=builder /app/server/node_modules ./server/node_modules
 COPY --from=builder /app/client/dist ./client/dist
 
+RUN mkdir -p /app/server/data && chown -R node:node /app
+USER node
+
+VOLUME ["/app/server/data"]
+
 EXPOSE 3001
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:3001/api/health || exit 1
 
 CMD ["node", "server/dist/index.js"]

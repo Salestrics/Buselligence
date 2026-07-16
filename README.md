@@ -27,7 +27,9 @@ npm run dev
 
 Open **http://localhost:5173/start** — create an agent, connect MCP, generate an app, run it.
 
-Demo login: `demo@buselligence.com` / `demo123456`
+Demo login (dev seed): `demo@buselligence.com` / `demo123456` — production seed uses a random password unless `SEED_USER_PASSWORD` is set.
+
+Signed-in users must bring their own API key (BYOK). Anonymous demo chat uses the server `OPENAI_API_KEY` only when explicitly allowed via `ALLOW_SERVER_DEMO_KEY`.
 
 ## Buselligence Desktop
 

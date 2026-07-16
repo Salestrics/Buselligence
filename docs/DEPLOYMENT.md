@@ -26,14 +26,23 @@ Express serves the built client from `client/dist`.
 | `ENCRYPTION_KEY` | Yes | API key encryption |
 | `PORT` | No | Server port (default 3001) |
 | `CLIENT_URL` | No | CORS origin (default localhost:5173) |
-| `OPENAI_API_KEY` | No | Demo mode only |
-| `KMS_PROVIDER` | No | aws, vault, gcp, local |
+| `OPENAI_API_KEY` | No | Anonymous demo only when `ALLOW_SERVER_DEMO_KEY` is not `false` |
+| `MCP_ALLOW_STDIO` | No | Default `false` — enable only with `MCP_STDIO_ALLOWLIST` |
+| `KMS_PROVIDER` | No | `local`, `aws_kms`, `vault`, `gcp_kms` |
 
 ## Docker
 
 ```bash
+docker compose up --build
+```
+
+Required secrets in `.env`: `BETTER_AUTH_SECRET`, `ENCRYPTION_KEY`. SQLite data persists in the `buselligence-data` volume.
+
+Single-container alternative:
+
+```bash
 docker build -t buselligence .
-docker run -p 3001:3001 --env-file .env buselligence
+docker run -p 3001:3001 -v buselligence-data:/app/server/data --env-file .env buselligence
 ```
 
 ## CLI deploy

@@ -46,6 +46,7 @@ export interface UserSettings {
   hasApiKey: boolean;
   apiKeyPreview: string | null;
   apiBaseUrl: string | null;
+  autoApproveMcpTools?: boolean;
 }
 
 export type McpTransport = "stdio" | "sse" | "http";
@@ -117,6 +118,7 @@ export async function saveSettings(input: {
   model?: string;
   apiKey?: string | null;
   apiBaseUrl?: string | null;
+  autoApproveMcpTools?: boolean;
 }): Promise<UserSettings> {
   const res = await fetch("/api/settings", {
     method: "PUT",

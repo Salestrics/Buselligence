@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { listAgents } from "../agents/definitions.js";
 import { buildCoreContextPrompt, getMemoryEngine, storeMemory } from "../core/runtime.js";
+import { completeWithOptionalCredentials } from "../llm/complete.js";
 import { listMcpServers } from "../mcp/manager.js";
 import { routeModel } from "../router/model-router.js";
 import { getOrCreateProfile } from "../learning/manager.js";
@@ -129,11 +130,20 @@ export async function kernelExecute(
 
   storeMemory(userId, `last_action:${request.action}`, JSON.stringify(request.input).slice(0, 200), "context");
 
+  const llm = await completeWithOptionalCredentials(
+    userId,
+    "You are the Buselligence Kernel planner. Summarize the execution outcome in one sentence.",
+    JSON.stringify({ action: request.action, input: request.input }),
+    () => `Kernel executed: ${request.action}`
+  );
+
   const output = {
     action: request.action,
-    result: `Kernel executed: ${request.action}`,
+    result: llm.text,
     skillsUsed: skills.map((s) => s.slug),
-    model: route.model,
+    model: llm.simulated ? route.model : llm.model,
+    provider: llm.simulated ? route.provider : llm.provider,
+    simulated: llm.simulated,
     context: context?.projectId ? buildCoreContextPrompt(userId, context.projectId).slice(0, 500) : undefined,
   };
 

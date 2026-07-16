@@ -18,11 +18,6 @@ export function formatTokenCount(value: number): string {
 }
 
 export function getAnonymousSessionId(): string {
-  const key = "buselligence_anonymous_session";
-  let id = localStorage.getItem(key);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(key, id);
-  }
-  return id;
+  // Anonymous sessions are issued as signed httpOnly cookies by the server.
+  return "";
 }

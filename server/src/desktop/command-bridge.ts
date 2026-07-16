@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { db } from "../db.js";
+import { createApprovalToken, consumeApprovalToken } from "../security/approval-tokens.js";
 import { getPermissions, validateCommand } from "./permissions.js";
 import { getWorkspace } from "./workspaces.js";
 
@@ -32,10 +33,32 @@ function simulateOutput(command: string): { output: string; previewUrl?: string 
   return { output: `Executed: ${command}\nExit code: 0` };
 }
 
-export function executeCommand(
+export function previewCommand(
   userId: string,
   command: string,
   workspaceId?: string
+): { requiresApproval: boolean; approvalToken?: string; reason?: string } {
+  const perms = getPermissions(userId);
+  const validation = validateCommand(command, perms);
+  if (!validation.allowed) {
+    return { requiresApproval: false, reason: validation.reason };
+  }
+
+  if (!perms.askBeforeExecution) {
+    return { requiresApproval: false };
+  }
+
+  return {
+    requiresApproval: true,
+    approvalToken: createApprovalToken(userId, { command, workspaceId }),
+  };
+}
+
+export function executeCommand(
+  userId: string,
+  command: string,
+  workspaceId?: string,
+  approvalToken?: string
 ): CommandResult {
   const perms = getPermissions(userId);
   const validation = validateCommand(command, perms);
@@ -49,6 +72,20 @@ export function executeCommand(
     ).run(id, workspaceId ?? null, userId, command, validation.reason ?? "Denied");
 
     return { id, command, status: "denied", output: validation.reason ?? "Permission denied" };
+  }
+
+  if (perms.askBeforeExecution) {
+    const approved = approvalToken
+      ? consumeApprovalToken(userId, approvalToken)
+      : null;
+    if (!approved || approved.command !== command) {
+      return {
+        id,
+        command,
+        status: "denied",
+        output: "Command requires a valid server-issued approval token",
+      };
+    }
   }
 
   const ws = workspaceId ? getWorkspace(userId, workspaceId) : null;

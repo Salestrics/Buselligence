@@ -1,4 +1,4 @@
-import type { Express, Request } from "express";
+import type { Express, Request, Response } from "express";
 import { getBuild, listBuilds, runGenesisBuild, startBuild } from "./engine.js";
 
 type GetSession = (req: Request) => Promise<{ user?: { id: string } } | null>;
@@ -55,6 +55,9 @@ export function registerGenesisRoutes(app: Express, getSession: GetSession) {
     res.setHeader("Connection", "keep-alive");
     res.flushHeaders?.();
 
+    const abortController = new AbortController();
+    req.on("close", () => abortController.abort());
+
     try {
       if (build.status === "completed") {
         res.write(`data: ${JSON.stringify({ type: "complete", message: "Already complete", progress: 100 })}\n\n`);
@@ -63,16 +66,18 @@ export function registerGenesisRoutes(app: Express, getSession: GetSession) {
       }
 
       for await (const event of runGenesisBuild(session.user.id, buildId)) {
+        if (abortController.signal.aborted) break;
         res.write(`data: ${JSON.stringify(event)}\n\n`);
         if (event.type === "complete") break;
       }
 
-      const finalBuild = getBuild(session.user.id, buildId);
-      res.write(`data: ${JSON.stringify({ type: "build", build: finalBuild })}\n\n`);
+      if (!abortController.signal.aborted) {
+        const finalBuild = getBuild(session.user.id, buildId);
+        res.write(`data: ${JSON.stringify({ type: "build", build: finalBuild })}\n\n`);
+      }
     } catch (err) {
-      res.write(
-        `data: ${JSON.stringify({ type: "error", message: err instanceof Error ? err.message : "Build failed" })}\n\n`
-      );
+      const message = err instanceof Error ? err.message : "Build failed";
+      res.write(`data: ${JSON.stringify({ type: "error", message })}\n\n`);
     }
 
     res.end();
