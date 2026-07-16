@@ -28,7 +28,9 @@ Buselligence v8 establishes the kernel primitive. Future work focuses on ecosyst
 
 ## Medium term
 
-- [ ] Desktop app (Electron/Tauri)
+- [x] Desktop Runtime UI at `/desktop`
+- [x] Tauri scaffold in `desktop/`
+- [ ] Publish native installers to GitHub Releases
 - [ ] Skill publishing workflow
 - [ ] Agent versioning and rollback
 - [ ] Multi-tenant deployments

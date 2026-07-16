@@ -4,6 +4,21 @@ All notable changes to Buselligence are documented here.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [8.2.0] - 2026-07-16
+
+### Added
+
+- **Buselligence Desktop Runtime** — native AI development environment
+- Tauri app scaffold (`desktop/`) → Buselligence.exe
+- First launch wizard: GitHub → repo → provision → build
+- One-click workspace provisioning with stack detection
+- Project intelligence scanner (framework, language, database)
+- Local command bridge with AI permissions
+- Multi-workspace manager with start/stop
+- Workspace snapshots and rollback
+- Offline/local mode architecture
+- `/desktop` command center UI
+
 ## [8.1.0] - 2026-07-16
 
 ### Added

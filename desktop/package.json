@@ -1,0 +1,15 @@
+{
+  "name": "buselligence-desktop",
+  "version": "1.0.0",
+  "description": "Buselligence Desktop — native AI development environment",
+  "private": true,
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:web": "cd ../client && npm run build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
+  }
+}

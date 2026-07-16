@@ -262,15 +262,18 @@ export function registerCoreRoutes(app: Express, getSession: GetSession) {
   // Desktop app info
   app.get("/api/core/desktop", (_req, res) => {
     res.json({
-      available: false,
-      planned: true,
+      available: true,
+      planned: false,
       stack: "Tauri",
+      url: "/desktop",
+      download: "Buselligence-setup.exe",
       capabilities: [
         "Local filesystem access",
-        "Terminal",
-        "Local models",
-        "Offline mode",
-        "Native integrations",
+        "Terminal & command bridge",
+        "GitHub workspace provisioning",
+        "Local models & offline mode",
+        "Multi-workspace manager",
+        "Workspace snapshots",
       ],
     });
   });

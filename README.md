@@ -29,6 +29,18 @@ Open **http://localhost:5173/start** — create an agent, connect MCP, generate 
 
 Demo login: `demo@buselligence.com` / `demo123456`
 
+## Buselligence Desktop
+
+**Your AI development environment in one click.**
+
+```
+Install Buselligence → Connect GitHub → Build.
+```
+
+Native runtime (Tauri): http://localhost:5173/desktop
+
+See [docs/DESKTOP.md](docs/DESKTOP.md) and [desktop/](desktop/).
+
 ## Build Anything Mode
 
 **Describe it. Watch it come alive.**
@@ -94,7 +106,8 @@ See [docs/KERNEL.md](docs/KERNEL.md).
 
 | URL | Description |
 |-----|-------------|
-| http://localhost:5173/build | **Build Anything** — AI Project Genesis |
+| http://localhost:5173/desktop | **Desktop Runtime** — native AI dev environment |
+| http://localhost:5173/build | Build Anything — AI Project Genesis |
 | http://localhost:5173/start | Hello World — 60-second wow |
 | http://localhost:5173/why | Why Buselligence |
 | http://localhost:5173/kernel | Kernel dashboard |

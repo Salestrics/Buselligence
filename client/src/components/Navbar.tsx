@@ -4,6 +4,7 @@ import { useSession, signOut } from "../lib/auth-client";
 
 const links = [
   { href: "/#features", label: "Platform" },
+  { href: "/desktop", label: "Desktop" },
   { href: "/build", label: "Build" },
   { href: "/start", label: "Start" },
   { href: "/why", label: "Why" },

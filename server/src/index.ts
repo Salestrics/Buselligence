@@ -98,6 +98,8 @@ import { registerKernelRoutes } from "./kernel/routes.js";
 import "./kernel/schema.js";
 import { registerGenesisRoutes } from "./genesis/routes.js";
 import "./genesis/schema.js";
+import { registerDesktopRoutes } from "./desktop/routes.js";
+import "./desktop/schema.js";
 import { getRouterConfig, routeModel } from "./router/model-router.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -125,6 +127,7 @@ registerPlatformRoutes(app, getSession);
 registerCoreRoutes(app, getSession);
 registerKernelRoutes(app, getSession);
 registerGenesisRoutes(app, getSession);
+registerDesktopRoutes(app, getSession);
 
 app.get("/api/health", (_req, res) => {
   const hasServerKey = Boolean(process.env.OPENAI_API_KEY);
@@ -152,6 +155,7 @@ app.get("/api/health", (_req, res) => {
       communityHub: true,
       buildAnythingMode: true,
       projectGenesisEngine: true,
+      desktopRuntime: true,
       aiOperatingLayer: true,
       autonomousProjectManager: true,
       multiAgentTeams: true,
@@ -169,7 +173,7 @@ app.get("/api/health", (_req, res) => {
       communityContributions: true,
       aiForEveryoneMode: true,
       aiNativeFileSystem: true,
-      desktopAppPlanned: true,
+      desktopAppAvailable: true,
       aiEmpowermentPlatform: true,
       universalAssistant: true,
       aiWorkspace: true,

@@ -9,6 +9,7 @@
 | [GETTING_STARTED.md](./GETTING_STARTED.md) | 60-second Hello World |
 | [KERNEL.md](./KERNEL.md) | Buselligence Kernel — unified execution layer |
 | [GENESIS.md](./GENESIS.md) | Build Anything Mode — AI Project Genesis |
+| [DESKTOP.md](./DESKTOP.md) | Desktop Runtime — native AI dev environment |
 | [WHY.md](./WHY.md) | Why Buselligence exists |
 
 ## Architecture
