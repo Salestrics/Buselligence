@@ -2,11 +2,14 @@ import "./load-env.js";
 import { betterAuth } from "better-auth";
 import { toNodeHandler } from "better-auth/node";
 import Database from "better-sqlite3";
+import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const authDbPath = path.join(__dirname, "..", "data", "auth.db");
+const dataDir = path.join(__dirname, "..", "data");
+mkdirSync(dataDir, { recursive: true });
+const authDbPath = path.join(dataDir, "auth.db");
 
 export const auth = betterAuth({
   database: new Database(authDbPath),
@@ -15,7 +18,7 @@ export const auth = betterAuth({
   trustedOrigins: [process.env.CLIENT_URL ?? "http://localhost:5173"],
   emailAndPassword: {
     enabled: true,
-    disableSignUp: true,
+    disableSignUp: process.env.DISABLE_SIGN_UP === "true",
   },
 });
 

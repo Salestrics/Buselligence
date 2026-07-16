@@ -1,45 +1,62 @@
 import { randomUUID } from "node:crypto";
-import OpenAI from "openai";
+import {
+  SYSTEM_PROMPT,
+  countMessageTokens,
+  createConversationTitle,
+  estimateTokens,
+} from "./chat-utils.js";
 import {
   addAnonymousTokens,
   FREE_TOKEN_LIMIT,
   getAnonymousTokens,
   type ChatMessage,
 } from "./db.js";
+import { listMcpServers, loadMcpTools } from "./mcp/manager.js";
+import {
+  getProviderAdapter,
+  resolveModel,
+  type ChatStreamEvent,
+  type ProviderCredentials,
+} from "./providers/index.js";
+import { resolveCredentials } from "./settings.js";
 
-const SYSTEM_PROMPT = `You are BizzyB, the Buselligence AI — an expert business intelligence assistant. You help users analyze data, build dashboards, write SQL, interpret KPIs, forecast trends, and make data-driven decisions. Be concise, actionable, and business-focused. When you don't have access to the user's actual data, explain what analysis you would run and what insights to look for.`;
+export {
+  countMessageTokens,
+  createConversationTitle,
+  estimateTokens,
+  SYSTEM_PROMPT,
+};
 
-export function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4);
-}
-
-export function countMessageTokens(messages: ChatMessage[]): number {
-  return messages.reduce((sum, msg) => sum + estimateTokens(msg.content) + 4, 0);
-}
-
-function getOpenAIClient(): OpenAI | null {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
-  return new OpenAI({ apiKey });
+export function newConversationId(): string {
+  return randomUUID();
 }
 
 export interface StreamChatOptions {
   messages: ChatMessage[];
+  userId?: string;
   anonymousSessionId?: string;
   isAuthenticated: boolean;
 }
 
 export interface StreamChatResult {
-  stream: AsyncGenerator<string>;
-  getUsage: () => Promise<{ promptTokens: number; completionTokens: number; totalTokens: number }>;
+  stream: AsyncGenerator<ChatStreamEvent>;
+  getUsage: () => Promise<{
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+    provider: string | null;
+    model: string | null;
+    mcpToolCount: number;
+  }>;
 }
 
 export function checkAnonymousLimit(
   sessionId: string | undefined,
-  isAuthenticated: boolean
-): { allowed: boolean; tokensUsed: number; limit: number } {
-  if (isAuthenticated) {
-    return { allowed: true, tokensUsed: 0, limit: FREE_TOKEN_LIMIT };
+  isAuthenticated: boolean,
+  hasUserApiKey: boolean
+): { allowed: boolean; tokensUsed: number; limit: number | null } {
+  if (isAuthenticated || hasUserApiKey) {
+    return { allowed: true, tokensUsed: 0, limit: null };
   }
 
   if (!sessionId) {
@@ -54,93 +71,108 @@ export function checkAnonymousLimit(
   };
 }
 
+async function buildMockStream(reply: string): Promise<StreamChatResult> {
+  async function* mockStream(): AsyncGenerator<ChatStreamEvent> {
+    const words = reply.split(" ");
+    for (const word of words) {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      yield { type: "delta", content: `${word} ` };
+    }
+  }
+
+  return {
+    stream: mockStream(),
+    getUsage: async () => ({
+      promptTokens: 0,
+      completionTokens: estimateTokens(reply),
+      totalTokens: estimateTokens(reply),
+      provider: null,
+      model: null,
+      mcpToolCount: 0,
+    }),
+  };
+}
+
 export async function createChatStream(
   options: StreamChatOptions
 ): Promise<StreamChatResult> {
-  const openai = getOpenAIClient();
+  const credentials = resolveCredentials(options.userId);
+
+  if (!credentials) {
+    const mockReply =
+      "Buselligence is a bring-your-own-API BI chatbot. Sign in, open Settings, and add your OpenAI, Anthropic, or Google API key to start chatting. You can also connect MCP servers to query live data sources.";
+
+    const result = await buildMockStream(mockReply);
+    const originalGetUsage = result.getUsage;
+
+    return {
+      stream: result.stream,
+      getUsage: async () => {
+        const usage = await originalGetUsage();
+        if (!options.isAuthenticated && options.anonymousSessionId) {
+          addAnonymousTokens(options.anonymousSessionId, usage.totalTokens);
+        }
+        return usage;
+      },
+    };
+  }
+
   const fullMessages: ChatMessage[] = [
     { role: "system", content: SYSTEM_PROMPT },
     ...options.messages,
   ];
 
-  let promptTokens = countMessageTokens(fullMessages);
-  let completionTokens = 0;
-  let fullContent = "";
-
-  if (!openai) {
-    const mockReply =
-      "I'm BizzyB, the Buselligence AI. Configure `OPENAI_API_KEY` to enable live responses. Meanwhile, I can help you think through KPI frameworks, dashboard design, and SQL patterns for revenue, churn, and funnel analysis.";
-
-    async function* mockStream() {
-      const words = mockReply.split(" ");
-      for (const word of words) {
-        await new Promise((r) => setTimeout(r, 25));
-        yield word + " ";
-      }
-    }
-
-    return {
-      stream: mockStream(),
-      getUsage: async () => {
-        completionTokens = estimateTokens(mockReply);
-        const totalTokens = promptTokens + completionTokens;
-
-        if (!options.isAuthenticated && options.anonymousSessionId) {
-          addAnonymousTokens(options.anonymousSessionId, totalTokens);
-        }
-
-        return { promptTokens, completionTokens, totalTokens };
-      },
-    };
-  }
-
-  const stream = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-    messages: fullMessages,
-    stream: true,
-    stream_options: { include_usage: true },
+  const providerCredentials: ProviderCredentials = resolveModel({
+    provider: credentials.provider,
+    apiKey: credentials.apiKey,
+    model: credentials.model,
+    baseUrl: credentials.baseUrl,
   });
 
-  async function* openaiStream() {
-    for await (const chunk of stream) {
-      const delta = chunk.choices[0]?.delta?.content;
-      if (delta) {
-        fullContent += delta;
-        yield delta;
-      }
+  const adapter = getProviderAdapter(providerCredentials.provider);
+  const mcpServers = options.userId ? listMcpServers(options.userId) : [];
+  const { tools, executeTool } = await loadMcpTools(mcpServers);
 
-      if (chunk.usage) {
-        promptTokens = chunk.usage.prompt_tokens ?? promptTokens;
-        completionTokens = chunk.usage.completion_tokens ?? completionTokens;
+  let completionText = "";
+
+  async function* eventStream(): AsyncGenerator<ChatStreamEvent> {
+    for await (const event of adapter.streamChat({
+      messages: fullMessages,
+      credentials: providerCredentials,
+      tools,
+      executeTool,
+    })) {
+      if (event.type === "delta" && event.content) {
+        completionText += event.content;
       }
+      yield event;
     }
   }
 
   return {
-    stream: openaiStream(),
+    stream: eventStream(),
     getUsage: async () => {
-      if (completionTokens === 0) {
-        completionTokens = estimateTokens(fullContent);
+      const usage = adapter.estimateUsage(fullMessages, completionText);
+
+      if (
+        credentials.source === "server" &&
+        !options.isAuthenticated &&
+        options.anonymousSessionId
+      ) {
+        addAnonymousTokens(options.anonymousSessionId, usage.totalTokens);
       }
 
-      const totalTokens = promptTokens + completionTokens;
-
-      if (!options.isAuthenticated && options.anonymousSessionId) {
-        addAnonymousTokens(options.anonymousSessionId, totalTokens);
-      }
-
-      return { promptTokens, completionTokens, totalTokens };
+      return {
+        ...usage,
+        provider: providerCredentials.provider,
+        model: providerCredentials.model ?? null,
+        mcpToolCount: tools.length,
+      };
     },
   };
 }
 
-export function createConversationTitle(messages: ChatMessage[]): string {
-  const firstUser = messages.find((m) => m.role === "user");
-  if (!firstUser) return "New conversation";
-  const text = firstUser.content.trim();
-  return text.length > 48 ? `${text.slice(0, 48)}…` : text;
-}
-
-export function newConversationId(): string {
-  return randomUUID();
+export function userHasConfiguredApiKey(userId?: string): boolean {
+  if (!userId) return false;
+  return resolveCredentials(userId)?.source === "user";
 }
