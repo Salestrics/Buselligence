@@ -4,9 +4,9 @@ import {
   copyrightYear,
   FORK_NOTICE,
   PROJECT_NAME,
-  TRADEMARK_OWNER,
   TRADEMARK_SHORT,
 } from "../lib/brand";
+import { SalestricsLink } from "./SalestricsLink";
 
 interface BrandFooterProps {
   /** Show extended trademark notice (landing/about pages). */
@@ -21,7 +21,7 @@ export function BrandFooter({ extended = false, className = "" }: BrandFooterPro
         <div className="flex flex-col items-center justify-between gap-4 text-sm text-slate-500 md:flex-row">
           <div className="max-w-xl text-center md:text-left">
             <p>
-              © {copyrightYear()} {TRADEMARK_OWNER}
+              © {copyrightYear()} <SalestricsLink />
             </p>
             <p className="mt-1">{TRADEMARK_SHORT}</p>
             <p className="mt-1 text-xs text-slate-600">

@@ -3,6 +3,7 @@
 export const PROJECT_NAME = "The Buselligence Project";
 export const PRODUCT_NAME = "Buselligence by Salestrics";
 export const TRADEMARK_OWNER = "Salestrics Inc.";
+export const CREATOR_URL = "https://www.salestrics.com";
 
 export function copyrightYear(): number {
   return new Date().getFullYear();

@@ -8,7 +8,7 @@ export function logo(): void {
   console.log(`
 ${CYAN}${BOLD}  Buselligence by Salestrics${RESET}
 ${DIM}  The Buselligence Project — open-source AI runtime (MIT)${RESET}
-${DIM}  Buselligence™ is a trademark of Salestrics Inc.${RESET}
+${DIM}  Buselligence™ is a trademark of Salestrics Inc. · https://www.salestrics.com${RESET}
 `);
 }
 

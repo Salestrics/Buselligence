@@ -45,8 +45,8 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Contact
 
-For questions about trademark or branding permissions, contact Salestrics Inc. through the official repository: [github.com/Salestrics/Buselligence](https://github.com/Salestrics/Buselligence).
+For questions about trademark or branding permissions, contact [Salestrics Inc.](https://www.salestrics.com) through the official repository: [github.com/Salestrics/Buselligence](https://github.com/Salestrics/Buselligence).
 
 ---
 
-© Salestrics Inc. Buselligence™ and The Buselligence Project™ are trademarks of Salestrics Inc.
+© [Salestrics Inc.](https://www.salestrics.com) Buselligence™ and The Buselligence Project™ are trademarks of [Salestrics Inc.](https://www.salestrics.com)

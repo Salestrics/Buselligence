@@ -4,7 +4,10 @@
   "type": "module",
   "description": "The Buselligence Project — open-source AI runtime by Salestrics Inc. (MIT). Buselligence™ is a trademark of Salestrics Inc.",
   "license": "MIT",
-  "author": "Salestrics Inc.",
+  "author": {
+    "name": "Salestrics Inc.",
+    "url": "https://www.salestrics.com"
+  },
   "homepage": "https://github.com/Salestrics/Buselligence",
   "repository": {
     "type": "git",

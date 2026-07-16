@@ -82,4 +82,4 @@ pip install kokoro-onnx soundfile numpy openai-whisper
 - Accent: `#0164ff`
 - Logo: `Buselligence_Logo` (do not modify)
 
-© Salestrics Inc.
+© [Salestrics Inc.](https://www.salestrics.com)

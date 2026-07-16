@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "description": "The Buselligence Project — web client (MIT). Buselligence™ is a trademark of Salestrics Inc.",
   "license": "MIT",
-  "author": "Salestrics Inc.",
+  "author": {
+    "name": "Salestrics Inc.",
+    "url": "https://www.salestrics.com"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

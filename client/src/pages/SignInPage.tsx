@@ -2,6 +2,7 @@ import { type FormEvent, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle, Loader2, Lock } from "lucide-react";
 import { Navbar } from "../components/Navbar";
+import { SalestricsLink } from "../components/SalestricsLink";
 import { signIn } from "../lib/auth-client";
 
 export function SignInPage() {
@@ -123,7 +124,8 @@ export function SignInPage() {
             </Link>
           </p>
           <p className="mt-8 text-center text-xs text-slate-600">
-            The Buselligence Project · MIT · Buselligence™ is a trademark of Salestrics Inc.
+            The Buselligence Project · MIT · Buselligence™ is a trademark of{" "}
+            <SalestricsLink className="hover:text-slate-400" />.
           </p>
         </div>
       </main>

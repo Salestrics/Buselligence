@@ -150,7 +150,7 @@ We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) and [DEVELOPMEN
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Copyright (c) Salestrics Inc.
+MIT — see [LICENSE](LICENSE). Copyright (c) [Salestrics Inc.](https://www.salestrics.com)
 
 ## Branding and Trademark
 
