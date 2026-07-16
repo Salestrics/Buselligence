@@ -9,6 +9,7 @@ import { SignInPage } from "./pages/SignInPage";
 import { SignUpPage } from "./pages/SignUpPage";
 import { ManifestoPage } from "./pages/ManifestoPage";
 import { WorkspacePage } from "./pages/WorkspacePage";
+import { CorePage } from "./pages/CorePage";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/workspace" element={<WorkspacePage />} />
+        <Route path="/core" element={<CorePage />} />
         <Route path="/manifesto" element={<ManifestoPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -71,7 +71,7 @@ npm run dev
 | http://localhost:5173/workspace | Your AI workspace |
 | http://localhost:5173/chat | Universal AI assistant |
 | http://localhost:5173/studio | Developer studio |
-| http://localhost:5173/manifesto | The Buselligence Manifesto |
+| http://localhost:5173/core | AI Operating Layer (Brain) |
 
 ## The Manifesto
 
@@ -83,6 +83,7 @@ Read the full manifesto at [/manifesto](http://localhost:5173/manifesto) or [doc
 
 | Doc | Description |
 |-----|-------------|
+| [docs/CORE.md](docs/CORE.md) | AI Operating Layer (Round 5) |
 | [docs/MANIFESTO.md](docs/MANIFESTO.md) | Philosophy and mission |
 | [docs/PLATFORM.md](docs/PLATFORM.md) | Platform architecture |
 | [docs/STUDIO.md](docs/STUDIO.md) | Developer studio |

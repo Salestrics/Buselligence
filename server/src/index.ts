@@ -92,6 +92,8 @@ import { registerStudioRoutes } from "./studio/routes.js";
 import "./studio/schema.js";
 import { registerPlatformRoutes } from "./platform/routes.js";
 import "./platform/schema.js";
+import { registerCoreRoutes } from "./core/routes.js";
+import "./core/schema.js";
 import { getRouterConfig, routeModel } from "./router/model-router.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -116,18 +118,37 @@ async function getSession(req: express.Request) {
 registerBiRoutes(app, getSession);
 registerStudioRoutes(app, getSession);
 registerPlatformRoutes(app, getSession);
+registerCoreRoutes(app, getSession);
 
 app.get("/api/health", (_req, res) => {
   const hasServerKey = Boolean(process.env.OPENAI_API_KEY);
   res.json({
     ok: true,
     name: "Buselligence",
-    version: "6.0.0",
+    version: "7.0.0",
     tagline: "AI for Everyone. Owned by Everyone.",
     mission: "Give every person the power of AI.",
-    category: "Open AI Empowerment Platform",
+    category: "Open Source AI Operating System",
     license: "MIT",
     features: {
+      aiOperatingLayer: true,
+      autonomousProjectManager: true,
+      multiAgentTeams: true,
+      codebaseEngine: true,
+      softwareLifecycle: true,
+      testingEngineer: true,
+      securityEngineer: true,
+      docsSystem: true,
+      simulationEnvironment: true,
+      knowledgeGraph: true,
+      naturalLanguageOS: true,
+      marketplace2: true,
+      collaborativeWorkspaces: true,
+      openAgentProtocol: true,
+      communityContributions: true,
+      aiForEveryoneMode: true,
+      aiNativeFileSystem: true,
+      desktopAppPlanned: true,
       aiEmpowermentPlatform: true,
       universalAssistant: true,
       aiWorkspace: true,
