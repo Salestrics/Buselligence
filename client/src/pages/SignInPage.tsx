@@ -1,13 +1,16 @@
 import { type FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle, Loader2, Lock } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { signIn } from "../lib/auth-client";
 
 export function SignInPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [searchParams] = useSearchParams();
+  const isDemo = searchParams.get("demo") === "1";
+  const next = searchParams.get("next") ?? "/chat";
+  const [email, setEmail] = useState(isDemo ? "demo@buselligence.com" : "");
+  const [password, setPassword] = useState(isDemo ? "demo123456" : "");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +28,7 @@ export function SignInPage() {
       return;
     }
 
-    navigate("/chat");
+    navigate(next.startsWith("/") ? next : `/${next}`);
   }
 
   return (
@@ -88,18 +91,29 @@ export function SignInPage() {
 
           <div className="mt-8 rounded-2xl border border-brand-500/20 bg-brand-500/10 p-4">
             <p className="text-sm font-medium text-brand-100">
-              New to Buselligence?
+              {isDemo ? "Demo account ready" : "New to Buselligence?"}
             </p>
             <p className="mt-2 text-sm leading-6 text-brand-100/80">
-              Create a free account, add your API key in Settings, and connect
-              MCP servers for live BI workflows.
+              {isDemo
+                ? "demo@buselligence.com / demo123456 — run npm run setup if sign-in fails."
+                : "Create a free account, add your API key in Settings, and connect MCP servers for live BI workflows."}
             </p>
-            <Link
-              to="/sign-up"
-              className="mt-4 inline-flex text-sm font-medium text-white hover:text-brand-200"
-            >
-              Create account →
-            </Link>
+            {!isDemo && (
+              <Link
+                to="/sign-up"
+                className="mt-4 inline-flex text-sm font-medium text-white hover:text-brand-200"
+              >
+                Create account →
+              </Link>
+            )}
+            {isDemo && (
+              <Link
+                to="/start"
+                className="mt-4 inline-flex text-sm font-medium text-white hover:text-brand-200"
+              >
+                Continue to Hello World →
+              </Link>
+            )}
           </div>
 
           <p className="mt-6 text-center text-sm text-slate-500">

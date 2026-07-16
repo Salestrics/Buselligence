@@ -1,137 +1,169 @@
-# Architecture
+# Buselligence Architecture (v8)
 
-Buselligence v4 is a self-hosted AI analyst platform: React frontend, Express API, SQLite persistence, semantic layer, first-class data connectors, analyst agents, dashboards, governance, and MCP as an extension layer.
+The open-source runtime for building, running, and extending AI-powered applications.
 
-## High-level diagram
+## Runtime architecture
 
-```
-┌─────────────────┐     SSE / REST      ┌────────────────────────────────────────────┐
-│  React Client   │ ◄──────────────────►│  Express API (server/src/index.ts)         │
-│  /platform      │                     │                                            │
-│  /chat          │                     │  ┌──────────┐  ┌────────────────────────┐  │
-└─────────────────┘                     │  │BetterAuth│  │ Chat + Analyst Agents  │  │
-                                        │  └────┬─────┘  └───────────┬────────────┘  │
-                                        │       │                    │               │
-                                        │  ┌────▼────────────────────▼────────────┐  │
-                                        │  │         Semantic Layer Manager         │  │
-                                        │  │  metrics · relationships · rules       │  │
-                                        │  └────┬────────────────────┬────────────┘  │
-                                        │       │                    │               │
-                    ┌───────────────────┤  ┌────▼─────┐  ┌──────────▼──────────┐     │
-                    │ Data Connectors   │  │Governance│  │ Dashboard Generator │     │
-                    │ PG·Snowflake·SF   │  │ Audit Log│  │ Scheduled Intel     │     │
-                    └───────────────────┤  └──────────┘  └─────────────────────┘     │
-                                        │                                            │
-                                        │  ┌────────────┐  ┌─────────────────────┐   │
-                                        │  │ Providers  │  │ MCP Manager         │   │
-                                        │  │ OpenAI     │  │ + Marketplace       │   │
-                                        │  │ Anthropic  │  │ (extension layer)   │   │
-                                        │  │ Google     │  └──────────┬──────────┘   │
-                                        │  └────────────┘             │              │
-                                        └─────────────────────────────┼──────────────┘
-                                                                      │
-                                                          ┌───────────▼───────────┐
-                                                          │ External Data Sources   │
-                                                          │ DBs · SaaS · MCP servers│
-                                                          └─────────────────────────┘
-```
+```mermaid
+flowchart TB
+    subgraph Client["React Client"]
+        Start["/start Hello World"]
+        KernelUI["/kernel Dashboard"]
+        Studio["/studio IDE"]
+        Chat["/chat Assistant"]
+        Workspace["/workspace Hub"]
+    end
 
-## Chat flow (v4)
+    subgraph API["Express API"]
+        KernelRoutes["/api/kernel/*"]
+        CoreRoutes["/api/core/*"]
+        StudioRoutes["/api/studio/*"]
+        ChatRoutes["/api/chat"]
+    end
 
-1. Client sends `POST /api/chat` with `agentId`, `noSqlMode`, and message history
-2. Server resolves credentials (BYOK or demo key)
-3. Server builds semantic context (metrics, relationships, rules, connector sources)
-4. Selected analyst agent system prompt is injected (Financial, Sales, etc.)
-5. MCP tools are loaded and namespaced
-6. Provider streams with tool-calling loop; audit log records data access
-7. In no-SQL mode, SQL is hidden from the user — only business narrative, charts, recommendations
+    subgraph Kernel["Buselligence Kernel"]
+        Identity["Identity"]
+        Context["Context"]
+        Permissions["Permissions"]
+        Memory["Memory"]
+        Tools["Tools"]
+        Agents["Agents"]
+        Models["Models"]
+        Events["Events"]
+        Execution["Execution"]
+    end
 
-## Analyst agents
-
-| Agent | Focus |
-|-------|-------|
-| Data Analyst | SQL, schema exploration, data quality |
-| Financial Analyst | Revenue, NRR, churn, CAC, forecasting |
-| Sales Analyst | Pipeline, win rates, deal velocity |
-| Marketing Analyst | Acquisition, campaigns, attribution |
-| Operations Analyst | Efficiency, capacity, SLAs |
-| Executive Assistant | Cross-functional summaries and narratives |
-| Buselligence AI | General orchestrator (default) |
-
-## Database schema
-
-### `buselligence.db` (application)
-
-| Table | Purpose |
-|-------|---------|
-| `user_settings` | Provider, model, encrypted API key |
-| `mcp_servers` | MCP server config per user |
-| `conversations` | Saved chat history |
-| `semantic_metrics` | KPI definitions, formulas, sources |
-| `semantic_relationships` | Entity graph (Customer → Account → Revenue) |
-| `semantic_rules` | Business rules (exclude test accounts, etc.) |
-| `data_connectors` | First-class connector configs (encrypted) |
-| `dashboards` | AI-generated dashboard specs |
-| `audit_logs` | Governance: who accessed what |
-| `scheduled_jobs` | Cron-style intelligence briefings |
-| `intelligence_briefings` | Generated briefing content |
-| `marketplace_installs` | Installed MCP marketplace presets |
-| `encryption_keys` | Envelope encryption DEK metadata |
-
-### `auth.db` (BetterAuth)
-
-Managed by BetterAuth — users, sessions, accounts.
-
-## Encryption
-
-Two layers:
-
-1. **AES-256-GCM** (`server/src/crypto.ts`) — direct key encryption for API keys
-2. **Envelope encryption** (`server/src/crypto/envelope.ts`) — KMS/Vault DEK wrapping
-
-```
-KMS/Vault → Data Encryption Key → Encrypted User Key
+    Client --> API
+    KernelRoutes --> Kernel
+    Execution --> Identity & Context & Permissions & Memory
+    Execution --> Tools & Agents & Models
+    Execution --> Events
 ```
 
-Providers: `local` (default), `aws`, `vault`, `gcp` via `KMS_PROVIDER`.
+## Kernel execution flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Kernel
+    participant Planner
+    participant Skills
+    participant Agent
+    participant Model
+    participant Trace
+
+    User->>Kernel: execute(action, input)
+    Kernel->>Trace: startTrace()
+    Kernel->>Planner: routeModel(action)
+    Planner->>Skills: resolveSkills()
+    Planner->>Agent: getAgentFromRegistry()
+    Agent->>Model: provider call
+    Model-->>Kernel: response
+    Kernel->>Trace: recordCost()
+    Kernel->>Trace: completeTrace()
+    Kernel-->>User: result + traceId
+```
+
+## Agent lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Defined: Agent definition
+    Defined --> Registered: seedAgentRegistry()
+    Registered --> Active: status=active
+    Active --> Executing: kernelExecute()
+    Executing --> Traced: observability
+    Traced --> Evaluated: runEvaluation()
+    Evaluated --> Active: benchmark recorded
+    Active --> Deprecated: version bump
+    Deprecated --> [*]
+```
+
+## MCP flow
+
+```mermaid
+flowchart LR
+    User["User Settings"] --> MCPManager["MCP Manager"]
+    MCPManager --> Stdio["stdio process"]
+    MCPManager --> HTTP["HTTP/SSE server"]
+    Stdio --> Tools["Namespaced tools"]
+    HTTP --> Tools
+    Tools --> Kernel["Kernel Tools layer"]
+    Kernel --> Chat["Chat / Execute"]
+    CLI["bus add mcp github"] --> MCPJson["mcp.json"]
+    MCPJson --> MCPManager
+```
+
+## Memory architecture
+
+```mermaid
+flowchart TB
+    subgraph Memory["Memory Engine"]
+        ContextMem["Context memory"]
+        ProjectMem["Project-scoped"]
+        UserMem["User-scoped"]
+    end
+
+    Kernel --> Memory
+    Chat --> Memory
+    CoreRuntime["Core Runtime"] --> Memory
+    PromptWorkspace["Prompt rules"] --> Memory
+```
+
+## Plugin system
+
+```mermaid
+flowchart TB
+    SDK["Extension SDK"] --> Manifest["Plugin manifest"]
+    Manifest --> Validate["validateExtension()"]
+    Validate --> Registry["kernel_extensions"]
+    Registry --> KernelTools["Kernel tools layer"]
+    Hooks["onInstall / onExecute / onTrace"] --> Kernel
+```
+
+## Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React, Vite, TypeScript, Tailwind |
+| Backend | Express 5, TypeScript |
+| Database | SQLite (better-sqlite3) |
+| Auth | BetterAuth |
+| AI | OpenAI, Anthropic, Google, local |
+| Protocol | MCP (Model Context Protocol) |
+| CLI | Node.js, TypeScript |
 
 ## Frontend routes
 
-| Route | Component | Auth |
-|-------|-----------|------|
-| `/` | LandingPage | — |
-| `/studio` | StudioPage | Required |
-| `/platform` | BiPlatformPage | Required |
-| `/chat` | ChatPage | Optional |
-| `/outbound` | OutboundPage | Required |
-| `/settings` | SettingsPage | Required |
-| `/sign-in` | SignInPage | — |
-| `/sign-up` | SignUpPage | — |
+| Route | Purpose |
+|-------|---------|
+| `/start` | Hello World — 60-second onboarding |
+| `/why` | Why Buselligence |
+| `/kernel` | Kernel dashboard |
+| `/core` | AI Operating Layer |
+| `/workspace` | AI workspace hub |
+| `/studio` | Developer studio |
+| `/chat` | Universal assistant |
+| `/platform` | Data intelligence |
+| `/settings` | BYOK, MCP |
 
-## Configuration layers
+## Database
 
-| Layer | Controls |
-|-------|----------|
-| `.env` | Server secrets, KMS provider, demo key |
-| Semantic Layer | Metrics, relationships, business rules |
-| Data Connectors | Warehouse and SaaS connections |
-| User Settings | Per-user AI provider and API key |
-| MCP Servers / Marketplace | Extension integrations |
+Kernel tables: `kernel_skills`, `kernel_agent_registry`, `kernel_evaluations`, `kernel_prompts`, `kernel_traces`, `kernel_costs`, `kernel_lockfiles`, `kernel_extensions`, `kernel_community_items`.
 
-## Production considerations
-
-- Set `NODE_ENV=production` — serves built client from Express
-- Use strong `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY`
-- Consider `KMS_PROVIDER=aws` or `vault` for envelope encryption
-- Back up `server/data/*.db` or migrate to PostgreSQL for scale
-- MCP stdio processes run on the same host — isolate in containers if needed
+See [KERNEL.md](./KERNEL.md) for API reference.
 
 ## Extension points
 
 | Area | How to extend |
 |------|---------------|
-| Metrics | Add via `/api/semantic/metrics` or UI at `/platform` |
-| Connectors | Extend `server/src/connectors/types.ts` definitions |
-| Analyst agents | Add definition in `server/src/agents/definitions.ts` |
-| MCP marketplace | Add preset in `server/src/marketplace/presets.ts` |
-| AI providers | Add adapter in `server/src/providers/` |
+| Skills | Add to `kernel/skills.ts` or community |
+| Agents | `agents/definitions.ts` + registry |
+| MCP | Settings UI or `bus add mcp` |
+| Plugins | Extension SDK |
+| CLI templates | `cli/src/lib/templates.ts` |
+| Examples | `examples/` directory |
+
+## Production
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md).

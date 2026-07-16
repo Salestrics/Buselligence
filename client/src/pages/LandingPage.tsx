@@ -31,23 +31,23 @@ export function LandingPage() {
 
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link
-                  to="/sign-up"
+                  to="/start"
                   className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 text-sm font-medium text-white transition hover:bg-brand-400"
                 >
-                  Get started free
+                  Hello World — 60 seconds
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  to="/workspace"
+                  to="/sign-up"
                   className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
                 >
-                  My Workspace
+                  Get started free
                 </Link>
                 <Link
-                  to="/manifesto"
+                  to="/why"
                   className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
                 >
-                  Read the Manifesto
+                  Why Buselligence?
                 </Link>
               </div>
 

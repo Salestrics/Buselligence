@@ -5,108 +5,113 @@
 <h1 align="center">AI for Everyone. Owned by Everyone.</h1>
 
 <p align="center">
-  <strong>The open-source runtime for building, running, and extending AI-powered applications.</strong><br />
-  An open-source AI empowerment platform — analyze, create, automate, learn, build, and solve problems with AI.
+  <strong>The open-source runtime for building, running, and extending AI-powered applications.</strong>
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" /></a>
+  <a href="https://github.com/Salestrics/Buselligence"><img src="https://img.shields.io/badge/Built%20with-Buselligence%20AI%20Runtime-6366f1" alt="Built with Buselligence" /></a>
 </p>
 
 ---
 
-## Mission
-
-**Give every person the power of AI.**
-
-Buselligence is not a BI chatbot. It is an open-source AI empowerment platform — think operating system for humanity, not another chatbot.
-
-Enterprise companies have AI teams. Developers have coding tools. Data scientists have analytics. Executives have intelligence systems. **Everyone else gets a chatbot.** Buselligence changes that.
-
-## Built around
-
-- Open models
-- Open protocols
-- Open source
-- User-owned data
-- User-controlled AI
-
-## Buselligence Kernel
-
-The unified execution layer. Everything runs through the kernel:
-
-**Identity · Context · Permissions · Memory · Tools · Agents · Models · Events · Execution**
-
-- **Skills system** — reusable capabilities agents compose
-- **Agent registry** — versioned agents with capabilities and permissions
-- **Evaluation framework** — accuracy, cost, speed, reliability benchmarks
-- **AI observability** — full execution traces
-- **Cost intelligence** — BYOK token and spend tracking
-- **buselligence.lock** — reproducible AI environments
-- **Extension SDK** — `createBuselligencePlugin()` for ecosystem plugins
-- **Local-first** — local models, embeddings, vector DB, offline dev
-
-See [docs/KERNEL.md](docs/KERNEL.md) and [examples/](examples/).
-
-## Platform pillars
-
-| Learn | Create | Analyze | Build |
-|-------|--------|---------|-------|
-| AI that teaches | Documents & media | Data intelligence | Apps & software |
-
-| Code | Data | Automate | Agents |
-|------|------|----------|--------|
-| Developer Studio | Connect anything | Workflows | Specialized AI workers |
-
-## Capabilities
-
-- **Universal AI Assistant** — research, create, code, build, automate, teach
-- **AI Workspace** — conversations, documents, projects, agents, knowledge base
-- **AI App Builder** — create software without coding
-- **Developer Studio** — Monaco IDE with AI engineer
-- **AI Data Intelligence** — connect any data source
-- **AI Agents** — personal, business, and development specialists
-- **Agent Marketplace** — install and customize AI workers
-- **Knowledge Engine** — your AI memory
-- **AI Learning System** — teaches at beginner, intermediate, expert
-- **Local AI Support** — OpenAI, Anthropic, Google, local Llama, custom models
-- **MCP-Native** — universal connector architecture
-
-## Quick start
+## 60-second Hello World
 
 ```bash
+git clone https://github.com/Salestrics/Buselligence.git
+cd Buselligence
 npm install
-npm install --prefix client
-npm install --prefix server
-cp .env.example .env
+npm run setup
 npm run dev
 ```
 
+Open **http://localhost:5173/start** — create an agent, connect MCP, generate an app, run it.
+
+Demo login: `demo@buselligence.com` / `demo123456`
+
+## Buselligence CLI
+
+```bash
+npm run bus -- hello
+npm run bus -- create my-agent
+npm run bus -- create crm --ai      # Full AI app: agent, DB, UI, API, tests, docs
+npm run bus -- add mcp github
+npm run bus -- deploy
+npm run bus -- test agent my-agent
+npm run bus -- evaluate software_engineer "Generate REST API"
+```
+
+## Why Buselligence?
+
+> AI should be programmable, extensible, and owned by everyone.
+
+Not 200 features — one primitive: the **Buselligence Kernel**.
+
+Read [docs/WHY.md](docs/WHY.md) or visit [/why](http://localhost:5173/why).
+
+## Buselligence Kernel
+
+Everything runs through the unified execution layer:
+
+**Identity · Context · Permissions · Memory · Tools · Agents · Models · Events · Execution**
+
+| Capability | Description |
+|------------|-------------|
+| Skills | Reusable capabilities agents compose |
+| Agent registry | Versioned lifecycle with permissions |
+| Evaluation | Accuracy, cost, speed, reliability benchmarks |
+| Observability | Full AI execution traces |
+| Cost intelligence | BYOK token and spend tracking |
+| buselligence.lock | Reproducible AI environments |
+| Extension SDK | `createBuselligencePlugin()` |
+| Local-first | Local models, embeddings, offline dev |
+
+See [docs/KERNEL.md](docs/KERNEL.md).
+
+## Reference applications
+
+| Example | Shows |
+|---------|-------|
+| [personal-ai-assistant](examples/personal-ai-assistant) | Memory, tools, agents |
+| [ai-coding-agent](examples/ai-coding-agent) | Monaco, repo understanding, execution |
+| [bi-analyst](examples/bi-analyst) | Data connectors, SQL, insights |
+| [autonomous-business-app](examples/autonomous-business-app) | Agents, workflows, automation |
+
+## URLs
+
 | URL | Description |
 |-----|-------------|
-| http://localhost:5173 | Landing |
-| http://localhost:5173/workspace | Your AI workspace |
-| http://localhost:5173/chat | Universal AI assistant |
+| http://localhost:5173/start | **Hello World** — 60-second wow |
+| http://localhost:5173/why | Why Buselligence |
+| http://localhost:5173/kernel | Kernel dashboard |
+| http://localhost:5173/workspace | AI workspace |
 | http://localhost:5173/studio | Developer studio |
-| http://localhost:5173/kernel | Buselligence Kernel (runtime) |
-| http://localhost:5173/core | AI Operating Layer (Brain) |
-
-## The Manifesto
-
-> AI is the greatest tool humanity has ever created. It should not be limited to corporations, engineers, or those who can afford expensive software. Buselligence exists to put the power of AI into the hands of everyone.
-
-Read the full manifesto at [/manifesto](http://localhost:5173/manifesto) or [docs/MANIFESTO.md](docs/MANIFESTO.md).
+| http://localhost:5173/chat | Universal assistant |
 
 ## Documentation
 
-| Doc | Description |
-|-----|-------------|
-| [docs/CORE.md](docs/CORE.md) | AI Operating Layer (Round 5) |
-| [docs/MANIFESTO.md](docs/MANIFESTO.md) | Philosophy and mission |
-| [docs/PLATFORM.md](docs/PLATFORM.md) | Platform architecture |
-| [docs/STUDIO.md](docs/STUDIO.md) | Developer studio |
-| [docs/BYOK.md](docs/BYOK.md) | Bring your own API keys |
-| [docs/MCP.md](docs/MCP.md) | MCP connector setup |
+Full docs at [docs/README.md](docs/README.md):
+
+| Section | Docs |
+|---------|------|
+| Getting Started | [GETTING_STARTED.md](docs/GETTING_STARTED.md) |
+| Architecture | [ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| AI Runtime | [KERNEL.md](docs/KERNEL.md), [AGENTS.md](docs/AGENTS.md), [SKILLS.md](docs/SKILLS.md) |
+| MCP & Extensions | [MCP.md](docs/MCP.md), [EXTENSIONS.md](docs/EXTENSIONS.md) |
+| Deployment | [DEPLOYMENT.md](docs/DEPLOYMENT.md) |
+| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md), [ROADMAP.md](ROADMAP.md) |
+
+## Powered by Buselligence
+
+```markdown
+[![Built with Buselligence](https://img.shields.io/badge/Built%20with-Buselligence%20AI%20Runtime-6366f1)](https://github.com/Salestrics/Buselligence)
+```
+
+See [docs/BADGE.md](docs/BADGE.md).
+
+## Contributing
+
+We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) and [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## License
 

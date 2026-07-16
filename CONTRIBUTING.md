@@ -1,57 +1,56 @@
 # Contributing to Buselligence
 
-Thank you for helping make Buselligence a better open-source BI chatbot. This project is MIT-licensed — contributions are welcome.
+Thank you for contributing to the open-source AI runtime.
 
-## Getting started
+## Quick links
 
-```bash
-git clone https://github.com/Salestrics/Buselligence.git
-cd Buselligence
-npm install
-npm install --prefix client
-npm install --prefix server
-cp .env.example .env
-npm run dev
-```
+- [Development Guide](./DEVELOPMENT.md)
+- [Roadmap](./ROADMAP.md)
+- [Documentation](./docs/README.md)
 
-## Development workflow
+## How to contribute
 
-1. Create a branch from `main`
-2. Make focused changes with clear commit messages
-3. Run `npm run build` to verify client and server compile
-4. Open a pull request with a description of what changed and why
+1. **Fork** the repository
+2. **Create a branch** — `cursor/your-feature-2871` or `feature/your-feature`
+3. **Make changes** — follow existing code conventions
+4. **Test** — `npm run build` must pass
+5. **Commit** — clear, descriptive messages
+6. **Open a PR** — use the pull request template
 
-## Project structure
+## Good first issues
 
-```
-├── client/          # React frontend
-├── server/          # Express API
-├── docs/            # Documentation
-├── README.md
-└── LICENSE          # MIT
-```
+Look for issues labeled `good first issue`:
 
-## Areas we'd love help with
+- Documentation improvements
+- Example templates
+- CLI commands
+- Skill definitions
+- Test coverage
 
-- Additional AI providers (Mistral, Ollama, OpenRouter)
-- OAuth sign-in providers via BetterAuth
-- PostgreSQL database adapter
-- Docker / docker-compose setup
-- MCP server presets and examples
-- Tests for chat, settings, and MCP flows
-- Accessibility improvements
+## Code guidelines
 
-## Code style
+- Minimize scope — focused diffs only
+- Match existing patterns in surrounding code
+- No over-engineering or unnecessary abstractions
+- TypeScript strict mode for server and client
 
-- Match existing TypeScript patterns
-- Keep changes minimal and focused
-- Prefer extending existing abstractions over duplication
-- Update docs when changing behavior or env vars
+## Areas we welcome contributions
 
-## Security
+| Area | Path |
+|------|------|
+| Kernel runtime | `server/src/kernel/` |
+| CLI | `cli/` |
+| Agents | `server/src/agents/` |
+| Skills | `server/src/kernel/skills.ts` |
+| Examples | `examples/` |
+| Documentation | `docs/` |
+| UI | `client/src/` |
 
-If you discover a security issue involving API key handling or MCP execution, please report it responsibly rather than opening a public issue with exploit details.
+## Community
+
+- Be respectful and constructive
+- AI should be owned by everyone — help make that real
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree your contributions will be licensed under the MIT License.

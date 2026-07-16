@@ -2,7 +2,14 @@
 
 AI-native project templates for the Buselligence Kernel runtime.
 
-Each example demonstrates how to build, run, and extend AI-powered applications using skills, agents, and the unified execution layer.
+## Official reference applications
+
+| Example | Demonstrates |
+|---------|--------------|
+| [personal-ai-assistant](./personal-ai-assistant) | Memory, tools, agents |
+| [ai-coding-agent](./ai-coding-agent) | Monaco, repo understanding, execution |
+| [bi-analyst](./bi-analyst) | Data connectors, SQL, insights |
+| [autonomous-business-app](./autonomous-business-app) | Agents, workflows, automation |
 
 ## Templates
 
