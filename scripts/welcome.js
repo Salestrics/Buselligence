@@ -10,9 +10,8 @@ ${CYAN}${BOLD}  ✦ Buselligence${RESET}
 
 ${GREEN}Ready in 60 seconds:${RESET}
 
-  1. cp .env.example .env   (if you haven't already)
-  2. npm run dev
-  3. Open ${BOLD}http://localhost:5173/start${RESET}
+  1. npm run dev            (.env is created automatically during setup)
+  2. Open ${BOLD}http://localhost:5173/start${RESET}
 
   Demo login: demo@buselligence.com / demo123456
 

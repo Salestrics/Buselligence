@@ -20,11 +20,15 @@ npm run setup
 
 ## 2. Configure environment
 
+`npm run setup` automatically creates `.env` from `.env.example` and generates `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY` when needed.
+
+To customize manually:
+
 ```bash
-cp .env.example .env
+cp .env.example .env   # only if you skipped setup
 ```
 
-Edit `.env` — at minimum set `BETTER_AUTH_SECRET` and `ENCRYPTION_KEY` (generate with `openssl rand -base64 32`).
+Edit `.env` — secrets are required for auth and API key encryption (generate with `openssl rand -base64 32`).
 
 Security-related optional variables:
 
@@ -43,6 +47,14 @@ Optional: add `OPENAI_API_KEY` for anonymous demo chat only when `ALLOW_SERVER_D
 ```bash
 npm run dev
 ```
+
+For production self-hosting (single port after `npm run build`):
+
+```bash
+CLIENT_URL=http://localhost:3001 npm start
+```
+
+`CLIENT_URL` must match the URL users open in the browser so sign-in cookies work over HTTP.
 
 | URL | What to do |
 |-----|------------|

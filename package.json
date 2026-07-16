@@ -1,6 +1,7 @@
 {
   "name": "buselligence",
   "version": "8.0.0",
+  "type": "module",
   "description": "The Buselligence Project — open-source AI runtime by Salestrics Inc. (MIT). Buselligence™ is a trademark of Salestrics Inc.",
   "license": "MIT",
   "author": "Salestrics Inc.",
@@ -13,12 +14,17 @@
     "dev": "concurrently -n server,client -c blue,green \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "build": "npm run build --prefix client && npm run build --prefix server && npm run build --prefix cli",
     "start": "npm run start --prefix server",
-    "setup": "npm install --prefix client && npm install --prefix server && npm install --prefix cli && npm run db:migrate --prefix server && npm run db:seed --prefix server",
+    "setup": "node scripts/ensure-env.js && npm install --prefix client && npm install --prefix server && npm install --prefix cli && npm run db:migrate --prefix server && npm run db:seed --prefix server",
     "postsetup": "node scripts/welcome.js",
+    "verify": "npm run test --prefix server && npm run test:e2e",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:update": "playwright test --update-snapshots",
     "bus": "node cli/dist/index.js",
     "cli:build": "npm run build --prefix cli"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
     "concurrently": "^9.2.1"
   }
 }
