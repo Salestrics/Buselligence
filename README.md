@@ -21,11 +21,15 @@
 git clone https://github.com/Salestrics/Buselligence.git
 cd Buselligence
 npm install
-npm run setup
+npm run setup    # creates .env, migrates DB, seeds demo user
 npm run dev
 ```
 
 Open **http://localhost:5173/start** — create an agent, connect MCP, generate an app, run it.
+
+**Production (single port):** `npm run build && CLIENT_URL=http://localhost:3001 npm start` then open `http://localhost:3001/start`.
+
+**Verify everything:** `npm run verify` (unit tests + Playwright visual e2e).
 
 Demo login (dev seed): `demo@buselligence.com` / `demo123456` — production seed uses a random password unless `SEED_USER_PASSWORD` is set.
 

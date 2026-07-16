@@ -20,6 +20,10 @@ export function createRateLimiter(options: {
   max: number;
   message?: string;
 }) {
+  if (process.env.E2E === "1" || process.env.DISABLE_RATE_LIMIT === "true") {
+    return (_req: Request, _res: Response, next: NextFunction): void => next();
+  }
+
   return (req: Request, res: Response, next: NextFunction): void => {
     const key = clientKey(req);
     const now = Date.now();
