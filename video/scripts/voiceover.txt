@@ -1,0 +1,21 @@
+# Voiceover script — The Buselligence Project launch trailer (45s)
+
+AI has changed how we work.
+
+But access to AI should belong to everyone.
+
+Today, AI is fragmented across countless tools, platforms, and closed systems.
+
+Buselligence is an open-source AI development platform designed to help anyone build with AI.
+
+Turn ideas into reality with AI-assisted development workflows.
+
+Connect models, tools, and workflows through an extensible AI ecosystem.
+
+Built openly. Extended freely. Powered by the community.
+
+The future of AI should not be locked away.
+
+The Buselligence Project.
+
+Give everyone the power of AI.

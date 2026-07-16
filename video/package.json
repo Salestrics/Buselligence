@@ -1,0 +1,26 @@
+{
+  "name": "buselligence-launch-trailer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Product Hunt launch trailer for The Buselligence Project",
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion bundle",
+    "render:visual": "remotion render src/index.tsx LaunchTrailer output/visual.mp4",
+    "render:final": "bash scripts/render.sh",
+    "generate:audio": "bash scripts/generate-audio.sh",
+    "generate:subs": "python3 scripts/generate-subtitles.py"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.286",
+    "@remotion/media-utils": "^4.0.286",
+    "@remotion/player": "^4.0.286",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.286"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.9.3"
+  }
+}
