@@ -158,6 +158,9 @@ MIT — see [LICENSE](LICENSE). Copyright (c) [Salestrics Inc.](https://www.sale
 
 The MIT License grants rights to the source code only. It does not grant permission to use the Buselligence name, logos, or official branding for forks, hosted services, or derivative products. See [docs/TRADEMARK.md](docs/TRADEMARK.md) for full details.
 
+## Support
+For support, please email support@salestrics.com. 
+
 | Topic | Guidance |
 |-------|----------|
 | **Source code** | Use, modify, fork, and distribute under MIT |
