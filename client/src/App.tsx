@@ -11,6 +11,7 @@ import { ManifestoPage } from "./pages/ManifestoPage";
 import { WorkspacePage } from "./pages/WorkspacePage";
 import { CorePage } from "./pages/CorePage";
 import { KernelPage } from "./pages/KernelPage";
+import { BuildPage } from "./pages/BuildPage";
 import { StartPage } from "./pages/StartPage";
 import { WhyPage } from "./pages/WhyPage";
 
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/workspace" element={<WorkspacePage />} />
         <Route path="/core" element={<CorePage />} />
         <Route path="/kernel" element={<KernelPage />} />
+        <Route path="/build" element={<BuildPage />} />
         <Route path="/start" element={<StartPage />} />
         <Route path="/why" element={<WhyPage />} />
         <Route path="/manifesto" element={<ManifestoPage />} />

@@ -4,6 +4,16 @@ All notable changes to Buselligence are documented here.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [8.1.0] - 2026-07-16
+
+### Added
+
+- **Build Anything Mode** — AI Project Genesis Engine at `/build`
+- Live Build Room with SSE streaming (architect, PM, engineering team)
+- Real Studio project + file generation from natural language ideas
+- `bus build "<idea>"` CLI command
+- [docs/GENESIS.md](docs/GENESIS.md)
+
 ## [8.0.0] - 2026-07-16
 
 ### Added

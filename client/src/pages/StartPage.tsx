@@ -53,10 +53,10 @@ const STEPS = [
   {
     id: "generate",
     title: "Generate an app",
-    description: "Use Studio to scaffold a full application with AI",
+    description: "Build Anything Mode — watch AI create a full application live",
     icon: Rocket,
-    href: "/studio",
-    cta: "Open studio",
+    href: "/build",
+    cta: "Build Anything",
   },
   {
     id: "run",

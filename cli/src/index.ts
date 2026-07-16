@@ -4,6 +4,7 @@ import { runAdd } from "./commands/add.js";
 import { runDeploy } from "./commands/deploy.js";
 import { runTest } from "./commands/test.js";
 import { runEvaluate } from "./commands/evaluate.js";
+import { runBuild } from "./commands/build.js";
 import { logo, heading, nextSteps } from "./lib/output.js";
 
 const args = process.argv.slice(2);
@@ -18,6 +19,7 @@ function showHelp(): void {
   bus deploy                   Deploy to Buselligence runtime
   bus test agent <slug>        Test agent configuration
   bus evaluate <slug> <task>   Run agent benchmark evaluation
+  bus build "<idea>"           Build Anything — AI Project Genesis (live at /build)
   bus hello                    60-second getting started guide
   bus --help                   Show this help
 `);
@@ -60,6 +62,9 @@ if (!command || command === "--help" || command === "-h") {
 } else if (command === "evaluate") {
   logo();
   runEvaluate(args.slice(1));
+} else if (command === "build") {
+  logo();
+  runBuild(args);
 } else {
   console.error(`Unknown command: ${command}`);
   showHelp();

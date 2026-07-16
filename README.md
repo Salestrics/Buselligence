@@ -29,6 +29,19 @@ Open **http://localhost:5173/start** — create an agent, connect MCP, generate 
 
 Demo login: `demo@buselligence.com` / `demo123456`
 
+## Build Anything Mode
+
+**Describe it. Watch it come alive.**
+
+```bash
+npm run dev
+# Open http://localhost:5173/build
+```
+
+Or: `npm run bus -- build "restaurant inventory platform"`
+
+See [docs/GENESIS.md](docs/GENESIS.md).
+
 ## Buselligence CLI
 
 ```bash
@@ -81,7 +94,8 @@ See [docs/KERNEL.md](docs/KERNEL.md).
 
 | URL | Description |
 |-----|-------------|
-| http://localhost:5173/start | **Hello World** — 60-second wow |
+| http://localhost:5173/build | **Build Anything** — AI Project Genesis |
+| http://localhost:5173/start | Hello World — 60-second wow |
 | http://localhost:5173/why | Why Buselligence |
 | http://localhost:5173/kernel | Kernel dashboard |
 | http://localhost:5173/workspace | AI workspace |

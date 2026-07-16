@@ -31,11 +31,17 @@ export function LandingPage() {
 
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link
-                  to="/start"
+                  to="/build"
                   className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 text-sm font-medium text-white transition hover:bg-brand-400"
                 >
-                  Hello World — 60 seconds
+                  Build Anything
                   <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/start"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
+                >
+                  Hello World — 60 seconds
                 </Link>
                 <Link
                   to="/sign-up"
