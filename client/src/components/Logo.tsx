@@ -1,4 +1,5 @@
 import { cn } from "../lib/utils";
+import { PRODUCT_NAME } from "../lib/brand";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -20,7 +21,7 @@ export function Logo({ size = "sm", showGlow = false, className }: LogoProps) {
       )}
       <img
         src="/buselligence-logo.png"
-        alt="Buselligence — Unlocking the Power of AI"
+        alt={`${PRODUCT_NAME} — Unlocking the Power of AI`}
         className={cn("relative w-auto object-contain object-left", heights[size])}
       />
     </div>

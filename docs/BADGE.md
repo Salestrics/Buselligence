@@ -1,6 +1,8 @@
 # Powered by Buselligence
 
-Show that your project is built on the Buselligence AI Runtime.
+Show that your project is built on **The Buselligence Project** source code.
+
+> **Trademark notice:** Buselligence™, The Buselligence Project™, and related logos are trademarks of Salestrics Inc. Using these badges attributes your project as built on the open-source runtime. It does not grant rights to rebrand a fork or derivative as the official Buselligence product. See [TRADEMARK.md](./TRADEMARK.md).
 
 ## Badge
 
@@ -25,7 +27,7 @@ Or use the hosted path after cloning:
 ## Text attribution
 
 ```
-Built with Buselligence AI Runtime
+Built with The Buselligence Project (MIT)
 https://github.com/Salestrics/Buselligence
 ```
 
@@ -34,9 +36,18 @@ https://github.com/Salestrics/Buselligence
 CLI-generated apps include attribution in README:
 
 ```
-Built with Buselligence AI Runtime.
+Built with The Buselligence Project — open-source AI runtime (MIT).
+Buselligence™ is a trademark of Salestrics Inc.
 ```
+
+## Forks and derivatives
+
+If you fork or redistribute modified source code, use your **own project name and branding**. You may state that your project is based on The Buselligence Project, but you may not present it as the official Buselligence Project or Buselligence by Salestrics unless authorized by Salestrics Inc.
 
 ## buselligence.lock
 
 Including a `buselligence.lock` in your repo signals Buselligence compatibility and pins reproducible AI environments.
+
+## Full policy
+
+[TRADEMARK.md](./TRADEMARK.md)

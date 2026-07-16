@@ -2,6 +2,8 @@
 
 **The open-source runtime for building, running, and extending AI-powered applications.**
 
+*Part of The Buselligence Project (MIT). Buselligence™ is a trademark of Salestrics Inc. See [TRADEMARK.md](./TRADEMARK.md).*
+
 ## Primitive
 
 Like Linux has a kernel, Kubernetes has orchestration, and MCP has tools — Buselligence has the **Kernel**: a unified execution layer that makes any feature AI-capable automatically.

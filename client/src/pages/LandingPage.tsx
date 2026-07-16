@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, GitBranch, MessageSquare, Sparkles } from "lucide-react";
+import { ArrowRight, MessageSquare, Sparkles } from "lucide-react";
 import { Features } from "../components/Features";
+import { BrandFooter } from "../components/BrandFooter";
 import { Navbar } from "../components/Navbar";
 import { NotThisCategory, Philosophy, PlatformPillars } from "../components/PlatformPillars";
 import { Pricing } from "../components/Pricing";
@@ -118,28 +119,7 @@ export function LandingPage() {
         <Pricing />
       </main>
 
-      <footer className="border-t border-white/5 py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-sm text-slate-500 md:flex-row">
-          <div className="text-center md:text-left">
-            <p>© {new Date().getFullYear()} Salestrics Inc</p>
-            <p className="mt-1">The Open Source AI Operating System · MIT License</p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-6">
-            <Link to="/manifesto" className="hover:text-slate-300">Manifesto</Link>
-            <Link to="/workspace" className="hover:text-slate-300">Workspace</Link>
-            <Link to="/chat" className="hover:text-slate-300">Chat</Link>
-            <Link to="/studio" className="hover:text-slate-300">Studio</Link>
-            <a
-              href="https://github.com/Salestrics/Buselligence"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 hover:text-slate-300"
-            >
-              <GitBranch className="h-3.5 w-3.5" /> GitHub
-            </a>
-          </div>
-        </div>
-      </footer>
+      <BrandFooter extended />
     </div>
   );
 }

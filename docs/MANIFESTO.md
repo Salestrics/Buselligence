@@ -1,5 +1,7 @@
 # The Buselligence Manifesto
 
+*The Buselligence Project — open source (MIT). Buselligence™ and The Buselligence Project™ are trademarks of Salestrics Inc.*
+
 ## AI for Everyone. Owned by Everyone.
 
 **Mission:** Give every person the power of AI.

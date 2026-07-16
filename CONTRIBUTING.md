@@ -1,12 +1,13 @@
-# Contributing to Buselligence
+# Contributing to The Buselligence Project
 
-Thank you for contributing to the open-source AI runtime.
+Thank you for contributing to the open-source AI runtime from Salestrics Inc.
 
 ## Quick links
 
 - [Development Guide](./DEVELOPMENT.md)
 - [Roadmap](./ROADMAP.md)
 - [Documentation](./docs/README.md)
+- [Branding & Trademark](./docs/TRADEMARK.md)
 
 ## How to contribute
 
@@ -45,6 +46,17 @@ Look for issues labeled `good first issue`:
 | Examples | `examples/` |
 | Documentation | `docs/` |
 | UI | `client/src/` |
+
+## Branding and trademark
+
+Contributions are welcome under the MIT License. Please note:
+
+- **Contributions do not grant trademark rights.** Submitting a pull request does not give permission to use Buselligence™, The Buselligence Project™, logos, or official branding for separate products or services.
+- **Unofficial products** built from forks or derivatives must not use Buselligence branding or imply they are the official Buselligence Project or Buselligence by Salestrics unless authorized by Salestrics Inc.
+- **Forks should rebrand.** Use a different project name, your own logos, and a distinct visual identity. You may attribute that your project is based on The Buselligence Project source code.
+- **Official repository branding** (logos, names in this repo) is for The Buselligence Project and official Salestrics distributions.
+
+Full policy: [docs/TRADEMARK.md](docs/TRADEMARK.md).
 
 ## Community
 

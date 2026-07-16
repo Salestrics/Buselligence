@@ -1,7 +1,9 @@
 {
   "name": "buselligence-server",
   "version": "1.0.0",
+  "description": "The Buselligence Project — server runtime (MIT). Buselligence™ is a trademark of Salestrics Inc.",
   "license": "MIT",
+  "author": "Salestrics Inc.",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",

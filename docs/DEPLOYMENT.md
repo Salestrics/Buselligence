@@ -1,6 +1,6 @@
 # Deployment
 
-Deploy Buselligence and AI applications built on the runtime.
+Deploy **The Buselligence Project** and AI applications built on the runtime. Source: MIT License. Trademarks: [TRADEMARK.md](./TRADEMARK.md).
 
 ## Development
 

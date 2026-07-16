@@ -1,8 +1,14 @@
 {
   "name": "buselligence",
   "version": "8.0.0",
-  "description": "Open-source AI runtime — build, run, and extend AI-powered applications.",
+  "description": "The Buselligence Project — open-source AI runtime by Salestrics Inc. (MIT). Buselligence™ is a trademark of Salestrics Inc.",
   "license": "MIT",
+  "author": "Salestrics Inc.",
+  "homepage": "https://github.com/Salestrics/Buselligence",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Salestrics/Buselligence.git"
+  },
   "scripts": {
     "dev": "concurrently -n server,client -c blue,green \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "build": "npm run build --prefix client && npm run build --prefix server && npm run build --prefix cli",

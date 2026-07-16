@@ -1,6 +1,8 @@
-# Buselligence Examples
+# The Buselligence Project — Examples
 
 AI-native project templates for the Buselligence Kernel runtime.
+
+> Source code: MIT License. Buselligence™ and The Buselligence Project™ are trademarks of Salestrics Inc. Forks and derivatives should use their own branding. See [docs/TRADEMARK.md](../docs/TRADEMARK.md).
 
 ## Official reference applications
 

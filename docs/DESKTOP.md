@@ -1,10 +1,10 @@
-# Buselligence Desktop Runtime
+# Buselligence by Salestrics — Desktop Runtime
 
 **Your AI development environment in one click.**
 
-> Buselligence is an AI computer for developers.
+> Part of **The Buselligence Project** (MIT). Buselligence™ is a trademark of Salestrics Inc. See [TRADEMARK.md](./TRADEMARK.md).
 
-Native AI development environment — Cursor + GitHub Codespaces + VS Code + AI Agents, open source and extensible.
+Native AI development environment — open source and extensible.
 
 ## Tagline
 

@@ -128,15 +128,17 @@ Full docs at [docs/README.md](docs/README.md):
 | AI Runtime | [KERNEL.md](docs/KERNEL.md), [AGENTS.md](docs/AGENTS.md), [SKILLS.md](docs/SKILLS.md) |
 | MCP & Extensions | [MCP.md](docs/MCP.md), [EXTENSIONS.md](docs/EXTENSIONS.md) |
 | Deployment | [DEPLOYMENT.md](docs/DEPLOYMENT.md) |
-| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md), [ROADMAP.md](ROADMAP.md) |
+| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md), [ROADMAP.md](ROADMAP.md), [TRADEMARK.md](TRADEMARK.md) |
 
 ## Powered by Buselligence
+
+For projects built *on* the runtime (not forks rebranded as Buselligence):
 
 ```markdown
 [![Built with Buselligence](https://img.shields.io/badge/Built%20with-Buselligence%20AI%20Runtime-6366f1)](https://github.com/Salestrics/Buselligence)
 ```
 
-See [docs/BADGE.md](docs/BADGE.md).
+See [docs/BADGE.md](docs/BADGE.md) and [docs/TRADEMARK.md](docs/TRADEMARK.md) for attribution and fork branding rules.
 
 ## Contributing
 
@@ -144,4 +146,22 @@ We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) and [DEVELOPMEN
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Salestrics Inc.
+MIT — see [LICENSE](LICENSE). Copyright (c) Salestrics Inc.
+
+## Branding and Trademark
+
+**The Buselligence Project** is open-source software licensed under the MIT License. **Buselligence™**, **The Buselligence Project™**, and related logos, names, and branding are trademarks of **Salestrics Inc.**
+
+The MIT License grants rights to the source code only. It does not grant permission to use the Buselligence name, logos, or official branding for forks, hosted services, or derivative products. See [docs/TRADEMARK.md](docs/TRADEMARK.md) for full details.
+
+| Topic | Guidance |
+|-------|----------|
+| **Source code** | Use, modify, fork, and distribute under MIT |
+| **Trademark** | Owned by Salestrics Inc. — separate permission required for branding use |
+| **Logos** | Official assets may not be used to brand unofficial forks or products |
+| **Forks** | Use your own name, logos, and identity; do not imply official affiliation |
+| **Official builds** | Identified as **Buselligence by Salestrics** or **The Buselligence Project** |
+
+> Anyone may use, modify, and distribute the source code according to the MIT License. However, distributions, forks, hosted versions, or derivative products should use their own branding and may not represent themselves as the official Buselligence Project or Buselligence by Salestrics product unless authorized by Salestrics Inc.
+
+Contributors: see [CONTRIBUTING.md](CONTRIBUTING.md) for trademark guidance. Pull requests do not grant trademark rights.

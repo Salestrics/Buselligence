@@ -1,8 +1,9 @@
 {
   "name": "@buselligence/cli",
   "version": "1.0.0",
-  "description": "Buselligence CLI — infrastructure for AI-powered applications",
+  "description": "The Buselligence Project CLI — infrastructure for AI-powered applications (MIT). Buselligence™ is a trademark of Salestrics Inc.",
   "license": "MIT",
+  "author": "Salestrics Inc.",
   "type": "module",
   "bin": {
     "bus": "./dist/index.js"

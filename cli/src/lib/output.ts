@@ -6,8 +6,9 @@ const RESET = "\x1b[0m";
 
 export function logo(): void {
   console.log(`
-${CYAN}${BOLD}  Buselligence CLI${RESET}
-${DIM}  The open-source runtime for AI-powered applications${RESET}
+${CYAN}${BOLD}  Buselligence by Salestrics${RESET}
+${DIM}  The Buselligence Project — open-source AI runtime (MIT)${RESET}
+${DIM}  Buselligence™ is a trademark of Salestrics Inc.${RESET}
 `);
 }
 

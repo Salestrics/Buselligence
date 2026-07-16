@@ -2,6 +2,8 @@
 
 > AI should be programmable, extensible, and owned by everyone.
 
+*The Buselligence Project — open source (MIT). Buselligence™ is a trademark of Salestrics Inc.*
+
 ## The problem
 
 Enterprise companies have AI teams. Developers have coding tools. Data scientists have analytics. Executives have intelligence systems.

@@ -19,3 +19,21 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Trademark Notice
+
+Buselligence™, The Buselligence Project™, and related logos, names, and branding
+are trademarks of Salestrics Inc. The Buselligence Project source code is open
+source and licensed under the MIT License above. Use of the Buselligence name,
+logos, or official branding is not granted by the software license and requires
+permission from Salestrics Inc.
+
+Anyone may use, modify, and distribute the source code according to the MIT
+License. However, distributions, forks, hosted versions, or derivative products
+should use their own branding and may not represent themselves as the official
+Buselligence Project or Buselligence by Salestrics product unless authorized by
+Salestrics Inc.
+
+See docs/TRADEMARK.md for full branding and trademark policy.

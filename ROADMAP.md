@@ -1,5 +1,7 @@
 # Roadmap
 
+**The Buselligence Project** — open source (MIT). Buselligence™ is a trademark of Salestrics Inc.
+
 Buselligence v8 establishes the kernel primitive. Future work focuses on ecosystem growth, not feature sprawl.
 
 ## Shipped (v8)

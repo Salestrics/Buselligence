@@ -1,8 +1,10 @@
-# Buselligence Desktop
+# Buselligence by Salestrics — Desktop
 
 **Your AI development environment in one click.**
 
-Native desktop runtime built with **Tauri** — Cursor + GitHub Codespaces + VS Code + AI Agents, open source and extensible.
+Native desktop runtime built with **Tauri** — part of **The Buselligence Project** from Salestrics Inc.
+
+> Official desktop builds are distributed as **Buselligence by Salestrics**. Source code is MIT licensed. Buselligence™ and The Buselligence Project™ are trademarks of Salestrics Inc. See [docs/TRADEMARK.md](../docs/TRADEMARK.md).
 
 ## Download
 

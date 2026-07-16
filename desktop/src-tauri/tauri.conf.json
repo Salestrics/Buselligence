@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Buselligence",
+  "productName": "Buselligence by Salestrics",
   "version": "1.0.0",
-  "identifier": "com.buselligence.desktop",
+  "identifier": "com.salestrics.buselligence",
   "build": {
     "beforeDevCommand": "npm run dev --prefix ../client",
     "devUrl": "http://localhost:5173/desktop",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Buselligence",
+        "title": "Buselligence by Salestrics",
         "width": 1400,
         "height": 900,
         "minWidth": 1024,

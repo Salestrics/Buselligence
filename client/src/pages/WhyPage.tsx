@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Code2, GitBranch, Layers, Shield, Users, Zap } from "lucide-react";
+import { BrandFooter } from "../components/BrandFooter";
 import { Navbar } from "../components/Navbar";
 
 const principles = [
@@ -119,6 +120,7 @@ export function WhyPage() {
           </Link>
         </section>
       </main>
+      <BrandFooter />
     </div>
   );
 }

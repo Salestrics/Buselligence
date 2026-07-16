@@ -1,6 +1,6 @@
 # Client
 
-React + Vite frontend for Buselligence.
+React + Vite frontend for **The Buselligence Project** (Buselligence by Salestrics). MIT licensed. See [../docs/TRADEMARK.md](../docs/TRADEMARK.md).
 
 ## Scripts
 

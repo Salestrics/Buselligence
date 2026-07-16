@@ -1,6 +1,6 @@
 # Server
 
-Express API for Buselligence — BYOK AI chat, MCP integrations, and conversation persistence.
+Express API for **The Buselligence Project** — BYOK AI chat, MCP integrations, and conversation persistence. MIT licensed. See [../docs/TRADEMARK.md](../docs/TRADEMARK.md).
 
 ## Scripts
 

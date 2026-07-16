@@ -1,7 +1,8 @@
 {
   "name": "buselligence-desktop",
   "version": "1.0.0",
-  "description": "Buselligence Desktop — native AI development environment",
+  "description": "Buselligence by Salestrics — native AI development environment (MIT). Buselligence™ is a trademark of Salestrics Inc.",
+  "author": "Salestrics Inc.",
   "private": true,
   "scripts": {
     "tauri": "tauri",

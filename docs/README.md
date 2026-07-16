@@ -1,6 +1,6 @@
-# Buselligence Documentation
+# The Buselligence Project — Documentation
 
-**The open-source runtime for building, running, and extending AI-powered applications.**
+**Open-source AI runtime by Salestrics Inc.** Source code: MIT License. Buselligence™ and The Buselligence Project™ are trademarks of Salestrics Inc. See [TRADEMARK.md](./TRADEMARK.md).
 
 ## Getting Started
 
@@ -53,6 +53,7 @@
 | Doc | Description |
 |-----|-------------|
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | How to contribute |
+| [TRADEMARK.md](./TRADEMARK.md) | Branding and trademark policy |
 | [../DEVELOPMENT.md](../DEVELOPMENT.md) | Development guide |
 | [../ROADMAP.md](../ROADMAP.md) | Project roadmap |
 

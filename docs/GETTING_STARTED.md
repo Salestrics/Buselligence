@@ -97,4 +97,8 @@ npm run bus -- evaluate software_engineer "Generate REST API"
 
 **Port in use:** Change `PORT` in `.env` (default 3001).
 
+## Branding and trademark
+
+The Buselligence Project source code is MIT licensed. Buselligence™, The Buselligence Project™, and related logos are trademarks of Salestrics Inc. See [TRADEMARK.md](./TRADEMARK.md).
+
 **No AI responses:** Add your API key in Settings (BYOK) or set `OPENAI_API_KEY` in `.env`.

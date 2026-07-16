@@ -1,5 +1,7 @@
 # Development Guide
 
+Part of **The Buselligence Project** (MIT). Buselligence™ is a trademark of Salestrics Inc. See [docs/TRADEMARK.md](docs/TRADEMARK.md).
+
 ## Prerequisites
 
 - Node.js 20+

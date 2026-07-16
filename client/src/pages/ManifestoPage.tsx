@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { BrandFooter } from "../components/BrandFooter";
 import { Navbar } from "../components/Navbar";
 import { Logo } from "../components/Logo";
 
@@ -96,6 +97,7 @@ export function ManifestoPage() {
           </Link>
         </div>
       </main>
+      <BrandFooter />
     </div>
   );
 }
