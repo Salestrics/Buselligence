@@ -100,6 +100,7 @@ Providers: `local` (default), `aws`, `vault`, `gcp` via `KMS_PROVIDER`.
 | Route | Component | Auth |
 |-------|-----------|------|
 | `/` | LandingPage | — |
+| `/studio` | StudioPage | Required |
 | `/platform` | BiPlatformPage | Required |
 | `/chat` | ChatPage | Optional |
 | `/outbound` | OutboundPage | Required |

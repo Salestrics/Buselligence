@@ -1,76 +1,76 @@
 import {
   Brain,
+  Code2,
   Database,
   LayoutDashboard,
   Shield,
   Users,
-  Zap,
-  BarChart3,
-  Clock,
+  Workflow,
   Store,
-  Lock,
+  Rocket,
+  GitBranch,
 } from "lucide-react";
 
 const features = [
   {
-    icon: Brain,
-    title: "Semantic Layer",
+    icon: Code2,
+    title: "AI Development Studio",
     description:
-      "Define metrics (Revenue, NRR, CAC, Churn), entity relationships, and business rules. The AI understands what your business means — not just your schema.",
+      "Monaco editor with TypeScript, Python, SQL, YAML support. Multi-file projects, file explorer, AI copilot, and preview runtime.",
   },
   {
     icon: Users,
-    title: "Analyst Agents",
+    title: "AI Software Engineer",
     description:
-      "Data, Financial, Sales, Marketing, Operations, and Executive Assistant agents — each with specialized workflows for root-cause analysis and narratives.",
-  },
-  {
-    icon: Database,
-    title: "Data Connectors",
-    description:
-      "PostgreSQL, Snowflake, BigQuery, Salesforce, Stripe, HubSpot, and more. MCP becomes the extension layer for custom integrations.",
+      "Describe what you need — the AI analyzes your data, writes SQL, builds React dashboards, creates APIs, and deploys previews.",
   },
   {
     icon: LayoutDashboard,
-    title: "Dashboard Generation",
+    title: "App Builder",
     description:
-      "Prompt: \"Build me a SaaS executive dashboard.\" Export React, PDF, slides, or embedded iframe.",
+      "Prompt: \"Build me a customer onboarding tracker.\" Generates pages, database schema, roles, API layer, and deployment package.",
+  },
+  {
+    icon: Database,
+    title: "Database Studio",
+    description:
+      "Schema explorer, SQL editor, query history, explain plans, and AI-generated queries from natural language.",
+  },
+  {
+    icon: Brain,
+    title: "Semantic Layer",
+    description:
+      "Define metrics, relationships, and business rules. The AI understands what your business means — not just your schema.",
+  },
+  {
+    icon: Workflow,
+    title: "Automation Builder",
+    description:
+      "Visual workflows: Salesforce lead → AI analysis → create opportunity → Slack notification. MCP, webhooks, cron.",
+  },
+  {
+    icon: GitBranch,
+    title: "Git-Native Development",
+    description:
+      "Branches, commits, AI-generated commits with change summaries, and code review agent before deployment.",
+  },
+  {
+    icon: Store,
+    title: "Package Marketplace",
+    description:
+      "Install AI agents, connectors, app templates, and dashboards. Zapier for business intelligence and development.",
+  },
+  {
+    icon: Rocket,
+    title: "One-Click Deploy",
+    description:
+      "Deploy React + Node + PostgreSQL to production. Auto-generated docs, API references, and architecture diagrams.",
   },
   {
     icon: Shield,
     title: "Data Governance",
     description:
-      "Audit log: who accessed what, which sources were queried, rows returned, and whether PII was exposed.",
-  },
-  {
-    icon: Zap,
-    title: "No SQL Required",
-    description:
-      "Ask business questions in plain English. AI creates queries, charts, explanations, and recommendations — you approve or modify.",
-  },
-  {
-    icon: Clock,
-    title: "Scheduled Intelligence",
-    description:
-      "Monday 8 AM: your weekly revenue briefing is ready — movement, pipeline, risks, opportunities, and recommended actions.",
-  },
-  {
-    icon: Store,
-    title: "MCP Marketplace",
-    description:
-      "Install Salesforce, Stripe, Snowflake, GitHub, Jira MCP servers in one click. Zapier for business intelligence.",
-  },
-  {
-    icon: Lock,
-    title: "Envelope Encryption",
-    description:
-      "AES-256-GCM with KMS/Vault envelope encryption. Your API keys never leave your control.",
-  },
-  {
-    icon: BarChart3,
-    title: "Explain This Metric",
-    description:
-      "Click ARR → \"Why is ARR up?\" The AI traces deals, expansions, churn, renewals, and pipeline into an executive narrative.",
+      "Audit log, envelope encryption, and AI code review for security, performance, and quality before every deploy.",
   },
 ];
 
@@ -80,10 +80,10 @@ export function Features() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            The self-hosted AI analyst that understands your business
+            Analyze, build, and automate — with AI that understands your business
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Connect your systems, define what metrics mean, ask questions, and get executive insights — without vendor lock-in.
+            Cursor meets Retool meets Metabase — with semantic business context and MCP as connective tissue.
           </p>
         </div>
 

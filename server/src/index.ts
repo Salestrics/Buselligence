@@ -88,6 +88,9 @@ import type {
 import "./outbound/schema.js";
 import { registerBiRoutes } from "./bi/routes.js";
 import "./bi/schema.js";
+import { registerStudioRoutes } from "./studio/routes.js";
+import "./studio/schema.js";
+import { getRouterConfig, routeModel } from "./router/model-router.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -109,13 +112,14 @@ async function getSession(req: express.Request) {
 }
 
 registerBiRoutes(app, getSession);
+registerStudioRoutes(app, getSession);
 
 app.get("/api/health", (_req, res) => {
   const hasServerKey = Boolean(process.env.OPENAI_API_KEY);
   res.json({
     ok: true,
     name: "Buselligence",
-    version: "4.0.0",
+    version: "5.0.0",
     license: "MIT",
     features: {
       byok: true,
@@ -130,6 +134,15 @@ app.get("/api/health", (_req, res) => {
       scheduledIntelligence: true,
       envelopeEncryption: true,
       contactManagement: true,
+      developmentStudio: true,
+      monacoEditor: true,
+      aiSoftwareEngineer: true,
+      appBuilder: true,
+      databaseStudio: true,
+      automationBuilder: true,
+      packageMarketplace: true,
+      modelRouter: true,
+      deployment: true,
       providers: listProviders().map((provider) => provider.id),
       searchProviders: listSearchProviders().map((provider) => provider.id),
       serverDefaultKey: hasServerKey,
@@ -139,6 +152,15 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/providers", (_req, res) => {
   res.json({ providers: listProviders() });
+});
+
+app.get("/api/router", (_req, res) => {
+  res.json(getRouterConfig());
+});
+
+app.post("/api/router/route", (req, res) => {
+  const { prompt } = req.body;
+  res.json({ route: routeModel(prompt ?? "") });
 });
 
 app.get("/api/settings", async (req, res) => {

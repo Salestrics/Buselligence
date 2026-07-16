@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ChatPage } from "./pages/ChatPage";
 import { LandingPage } from "./pages/LandingPage";
 import { BiPlatformPage } from "./pages/BiPlatformPage";
+import { StudioPage } from "./pages/StudioPage";
 import { OutboundPage } from "./pages/OutboundPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { SignInPage } from "./pages/SignInPage";
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/outbound" element={<OutboundPage />} />
         <Route path="/platform" element={<BiPlatformPage />} />
+        <Route path="/studio" element={<StudioPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />

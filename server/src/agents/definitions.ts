@@ -5,7 +5,9 @@ export type AgentId =
   | "sales_analyst"
   | "marketing_analyst"
   | "operations_analyst"
-  | "executive_assistant";
+  | "executive_assistant"
+  | "software_engineer"
+  | "code_review";
 
 export interface AnalystAgent {
   id: AgentId;
@@ -89,6 +91,26 @@ export const ANALYST_AGENTS: AnalystAgent[] = [
     focus: ["executive summaries", "risk", "opportunities", "board metrics"],
     workflow: ["Synthesize cross-functional data", "Identify risks/opportunities", "Write executive narrative", "Recommend actions"],
     systemPrompt: `${BASE_CONTEXT}\n\nYou are an Executive Assistant analyst. Write concise, board-ready narratives. Lead with the answer, then supporting evidence. Flag risks and opportunities proactively. No jargon.`,
+  },
+  {
+    id: "software_engineer",
+    name: "Software Engineer",
+    title: "AI Software Engineer",
+    description: "Builds apps, APIs, dashboards, and automations from business requirements",
+    focus: ["React", "TypeScript", "SQL", "APIs", "deployment"],
+    workflow: ["Analyze data sources", "Create queries", "Generate code", "Build components", "Deploy preview"],
+    systemPrompt: `You are the Buselligence AI Software Engineer. You understand business context, database schemas, APIs, existing code, and MCP tools.
+
+Build production-quality code that serves business needs. Use the semantic layer for metric definitions. Generate React/TypeScript, SQL, and API endpoints. Structure projects with src/, components/, queries/, workflows/.`,
+  },
+  {
+    id: "code_review",
+    name: "Code Review",
+    title: "AI Code Review Agent",
+    description: "Security, performance, and quality review before deployment",
+    focus: ["security", "performance", "type safety", "best practices"],
+    workflow: ["Scan for secrets", "Check query performance", "Validate types", "Suggest improvements"],
+    systemPrompt: `You are the Buselligence AI Code Review Agent. Review code for security (exposed secrets, injection), performance (slow queries, N+1), and quality (types, error handling). Output structured pass/warn/fail with actionable suggestions.`,
   },
 ];
 

@@ -19,14 +19,13 @@ export function LandingPage() {
               </div>
 
               <h1 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl">
-                The self-hosted AI analyst that understands your business
+                The open-source AI workspace where businesses analyze, build, and automate
               </h1>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-400">
-                Open-source AI analyst for your business data. Connect PostgreSQL,
-                Snowflake, Salesforce, Stripe, and more — define what metrics mean,
-                ask questions in plain English, and get executive insights without
-                vendor lock-in.
+                Buselligence is an open-source AI business operating system. Analyze data,
+                build software, automate workflows, and create custom applications — using
+                your own AI models and infrastructure, without vendor lock-in.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
@@ -38,10 +37,10 @@ export function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  to="/platform"
+                  to="/studio"
                   className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:text-white"
                 >
-                  BI Platform
+                  Open Studio
                 </Link>
                 <a
                   href="https://github.com/Salestrics/Buselligence"
@@ -56,8 +55,8 @@ export function LandingPage() {
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
                 {[
-                  ["Semantic", "Business metrics"],
-                  ["Agents", "Specialized analysts"],
+                  ["Studio", "Build & deploy apps"],
+                  ["Agents", "AI that knows your business"],
                   ["MIT", "Fully open source"],
                 ].map(([value, label]) => (
                   <div
